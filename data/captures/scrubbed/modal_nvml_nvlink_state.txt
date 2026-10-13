@@ -1,0 +1,27 @@
+driver: 580.95.05
+--- GPU 0 GPU-00000000-0000-0000-0000-000000000000
+  link 0 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 1 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 2 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 3 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 4 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 5 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 6 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 7 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 8 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 9 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 10 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 11 state= 1 remote= FFFFFFFF:FF:FF.0
+--- GPU 1 GPU-00000000-0000-0000-0000-000000000000
+  link 0 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 1 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 2 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 3 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 4 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 5 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 6 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 7 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 8 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 9 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 10 state= 1 remote= FFFFFFFF:FF:FF.0
+  link 11 state= 1 remote= FFFFFFFF:FF:FF.0

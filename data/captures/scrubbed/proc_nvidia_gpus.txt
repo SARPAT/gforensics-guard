@@ -1,0 +1,12 @@
+== /proc/driver/nvidia/gpus/0000:06:00.0/
+Model: 		 NVIDIA A100-SXM4-40GB
+IRQ:   		 22
+GPU UUID: 	 GPU-00000000-0000-0000-0000-000000000000
+Video BIOS: 	 92.00.36.00.04
+Bus Type: 	 PCIe
+DMA Size: 	 47 bits
+DMA Mask: 	 0x7fffffffffff
+Bus Location: 	 0000:06:00.0
+Device Minor: 	 0
+GPU Firmware: 	 570.148.08
+GPU Excluded:	 No

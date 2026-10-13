@@ -1,0 +1,50 @@
+5,0,0,-;Linux version 6.8.0-60-generic (buildd@lcy02-amd64-098) (x86_64-linux-gnu-gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #63~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Apr 22 19:00:15 UTC 2 (Ubuntu 6.8.0-60.63~22.04.1-generic 6.8.12)
+6,1,0,-;Command line: BOOT_IMAGE=/boot/vmlinuz-6.8.0-60-generic root=UUID=00000000-0000-0000-0000-000000000000 ro intel_pstate=disable console=tty1 console=ttyS0
+6,2,0,-;KERNEL supported cpus:
+6,3,0,-;  Intel GenuineIntel
+6,4,0,-;  AMD AuthenticAMD
+6,5,0,-;  Hygon HygonGenuine
+6,6,0,-;  Centaur CentaurHauls
+6,7,0,-;  zhaoxin   Shanghai  
+6,8,0,-;BIOS-provided physical RAM map:
+6,9,0,-;BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
+6,10,0,-;BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved
+6,11,0,-;BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
+6,12,0,-;BIOS-e820: [mem 0x0000000000100000-0x000000007ffd8fff] usable
+6,13,0,-;BIOS-e820: [mem 0x000000007ffd9000-0x000000007fffffff] reserved
+6,14,0,-;BIOS-e820: [mem 0x00000000b0000000-0x00000000bfffffff] reserved
+6,15,0,-;BIOS-e820: [mem 0x00000000fed1c000-0x00000000fed1ffff] reserved
+6,16,0,-;BIOS-e820: [mem 0x00000000feffc000-0x00000000feffffff] reserved
+6,17,0,-;BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reserved
+6,18,0,-;BIOS-e820: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+6,19,0,-;BIOS-e820: [mem 0x0000010000000000-0x000001367fffffff] usable
+6,20,0,-;NX (Execute Disable) protection: active
+6,21,0,-;APIC: Static calls initialized
+6,22,0,-;SMBIOS 2.8 present.
+6,23,0,-;DMI: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+6,24,0,-;Hypervisor detected: KVM
+6,25,0,-;kvm-clock: Using msrs 4b564d01 and 4b564d00
+6,26,0,-;kvm-clock: using sched offset of 8354716946 cycles
+6,27,2,-;clocksource: kvm-clock: mask: 0xffffffffffffffff max_cycles: 0x1cd42e4dffb, max_idle_ns: 881590591483 ns
+6,28,4,-;tsc: Detected 2449.998 MHz processor
+7,29,912,-;e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+7,30,915,-;e820: remove [mem 0x000a0000-0x000fffff] usable
+6,31,921,-;last_pfn = 0x13680000 max_arch_pfn = 0x400000000
+6,32,949,-;MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
+6,33,951,-;x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+6,34,989,-;last_pfn = 0x7ffd9 max_arch_pfn = 0x400000000
+6,35,5000,-;Using GB pages for direct mapping
+6,36,5204,-;RAMDISK: [mem 0x1f63b000-0x2bb14fff]
+6,37,5214,-;ACPI: Early table checksum verification disabled
+6,38,5217,-;ACPI: RSDP 0x00000000000F5D40 000014 (v00 BOCHS )
+6,39,5220,-;ACPI: RSDT 0x000000007FFE2A56 00003C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,40,5225,-;ACPI: FACP 0x000000007FFE24DE 0000F4 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+6,41,5230,-;ACPI: DSDT 0x000000007FFDF480 00305E (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,42,5233,-;ACPI: FACS 0x000000007FFDF440 000040
+6,43,5235,-;ACPI: APIC 0x000000007FFE25D2 000160 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,44,5237,-;ACPI: HPET 0x000000007FFE2732 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,45,5239,-;ACPI: SRAT 0x000000007FFE276A 000288 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,46,5242,-;ACPI: MCFG 0x000000007FFE29F2 00003C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,47,5244,-;ACPI: WAET 0x000000007FFE2A2E 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+6,48,5246,-;ACPI: Reserving FACP table memory at [mem 0x7ffe24de-0x7ffe25d1]
+6,49,5247,-;ACPI: Reserving DSDT table memory at [mem 0x7ffdf480-0x7ffe24dd]

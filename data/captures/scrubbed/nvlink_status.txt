@@ -1,0 +1,2 @@
+GPU 0: NVIDIA A100-SXM4-40GB (UUID: GPU-00000000-0000-0000-0000-000000000000)
+NVML: Unable to retrieve NVLink information as all links are inActive

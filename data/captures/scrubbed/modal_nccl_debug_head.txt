@@ -1,0 +1,174 @@
+/usr/local/lib/python3.12/site-packages/torch/_subclasses/functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+/usr/local/lib/python3.12/site-packages/torch/_subclasses/functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+/usr/local/lib/python3.12/site-packages/torch/_subclasses/functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+modal:36:36 [0] NCCL INFO ncclOsDlopen(libnccl-env.so) failed: libnccl-env.so: cannot open shared object file: No such file or directory
+modal:36:36 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+modal:36:36 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+modal:36:36 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.1<0>
+modal:36:36 [0] NCCL INFO bootstrap.cc:411 (bootstrapCreateRoot) Host Calloc Size 96 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:416 (bootstrapCreateRoot) Host Calloc Size 16 pointer 0xADDR
+modal:36:36 [0] NCCL INFO cudaDriverVersion 13000
+modal:36:48 [0] NCCL INFO Socket handshake magic 0x564ab9f2fc4b9d6c (built-in default)
+modal:36:36 [0] NCCL INFO NCCL version 2.30.7+cuda13.3
+modal:36:36 [0] NCCL INFO NCCL git version HEAD a5187fa2e
+modal:36:36 [0] NCCL INFO init.cc:2506 (ncclCommInitRankDev) Host Calloc Size 1199744 pointer 0xADDR
+modal:36:36 [0] NCCL INFO init.cc:2507 (ncclCommInitRankDev) Host Calloc Size 4 pointer 0xADDR
+modal:37:37 [1] NCCL INFO ncclOsDlopen(libnccl-env.so) failed: libnccl-env.so: cannot open shared object file: No such file or directory
+modal:37:37 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+modal:37:37 [1] NCCL INFO cudaDriverVersion 13000
+modal:36:36 [0] NCCL INFO init.cc:2508 (ncclCommInitRankDev) Cuda Host Alloc Size 4 pointer 0xADDR
+modal:36:36 [0] NCCL INFO init.cc:2509 (ncclCommInitRankDev) Host Calloc Size 4 pointer 0xADDR
+modal:36:36 [0] NCCL INFO Comm config Blocking set to 1
+modal:36:36 [0] NCCL INFO Comm config Comm name set to default_pg:0
+modal:36:36 [0] NCCL INFO init.cc:2530 (ncclCommInitRankDev) Host Calloc Size 128 pointer 0xADDR
+modal:37:37 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+modal:37:37 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.1<0>
+modal:37:37 [1] NCCL INFO NCCL version 2.30.7+cuda13.3
+modal:37:37 [1] NCCL INFO NCCL git version HEAD a5187fa2e
+modal:37:37 [1] NCCL INFO init.cc:2506 (ncclCommInitRankDev) Host Calloc Size 1199744 pointer 0xADDR
+modal:37:37 [1] NCCL INFO init.cc:2507 (ncclCommInitRankDev) Host Calloc Size 4 pointer 0xADDR
+modal:37:37 [1] NCCL INFO init.cc:2508 (ncclCommInitRankDev) Cuda Host Alloc Size 4 pointer 0xADDR
+modal:37:37 [1] NCCL INFO init.cc:2509 (ncclCommInitRankDev) Host Calloc Size 4 pointer 0xADDR
+modal:37:37 [1] NCCL INFO Comm config Blocking set to 1
+modal:37:37 [1] NCCL INFO Comm config Comm name set to default_pg:0
+modal:37:37 [1] NCCL INFO init.cc:2530 (ncclCommInitRankDev) Host Calloc Size 128 pointer 0xADDR
+modal:36:36 [0] NCCL INFO init.cc:468 (commAlloc) Host Calloc Size 8 pointer 0xADDR
+modal:36:36 [0] NCCL INFO ncclOsDlopen(libnccl-net.so) failed: libnccl-net.so: cannot open shared object file: No such file or directory
+modal:36:36 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+modal:36:36 [0] NCCL INFO Count not open libibverbs.so
+modal:36:36 [0] NCCL INFO Count not open libibverbs.so.1
+modal:36:36 [0] NCCL INFO transport/net_ib/init.cc:526 (ncclIbInit) -> 3
+modal:36:36 [0] NCCL INFO Failed to initialize NET plugin IB
+modal:36:36 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.1<0>
+modal:36:36 [0] NCCL INFO Initialized NET plugin Socket
+modal:36:36 [0] NCCL INFO Could not get speed from /sys/class/net/eth0/speed. Defaulting to 10 Gbps.
+modal:36:36 [0] NCCL INFO Assigned NET plugin Socket to comm
+modal:36:36 [0] NCCL INFO ncclOsDlopen(libnccl-rma.so) failed: libnccl-rma.so: cannot open shared object file: No such file or directory
+modal:36:36 [0] NCCL INFO RMA/Plugin: Could not find: libnccl-rma.so
+modal:36:36 [0] NCCL INFO RMA/Plugin: Failed to load external plugin libnccl-rma.so, dlHandle: (nil), ncclRma: (nil)
+
+[2026-09-17 10:33:34] modal:36:36 [0] misc/ibvwrap.cc:185 (wrap_ibv_alloc_pd) NCCL WARN lib wrapper not initialized.
+modal:36:36 [0] NCCL INFO transport/net_ib/gdr.cc:55 (ibDmaBufSupportInitOnce) -> 3
+modal:36:36 [0] NCCL INFO Unable to use GIN: Peermem is not supported, nor DMA-BUF.
+modal:36:36 [0] NCCL INFO RMA/Plugin: Failed to initialize any plugin
+modal:36:36 [0] NCCL INFO ncclOsDlopen(libnccl-gin.so) failed: libnccl-gin.so: cannot open shared object file: No such file or directory
+modal:36:36 [0] NCCL INFO GIN/Plugin: Could not find: libnccl-gin.so
+modal:36:36 [0] NCCL INFO GIN/Plugin: Failed to load external plugin libnccl-gin.so, dlHandle: (nil), ncclGin: (nil)
+modal:36:36 [0] NCCL INFO GIN/Plugin: Failed to initialize any GIN plugin
+modal:36:36 [0] NCCL INFO Using network Socket
+modal:36:36 [0] NCCL INFO mem_manager.cc:36 (ncclMemManagerInit) Host Calloc Size 136 pointer 0xADDR
+modal:36:36 [0] NCCL INFO MemManager: Initialized for device 0
+modal:36:36 [0] NCCL INFO Loaded NVML from libnvidia-ml.so.1
+modal:37:37 [1] NCCL INFO init.cc:468 (commAlloc) Host Calloc Size 8 pointer 0xADDR
+modal:37:37 [1] NCCL INFO ncclOsDlopen(libnccl-net.so) failed: libnccl-net.so: cannot open shared object file: No such file or directory
+modal:37:37 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+modal:37:37 [1] NCCL INFO Count not open libibverbs.so
+modal:37:37 [1] NCCL INFO Count not open libibverbs.so.1
+modal:37:37 [1] NCCL INFO transport/net_ib/init.cc:526 (ncclIbInit) -> 3
+modal:37:37 [1] NCCL INFO Failed to initialize NET plugin IB
+modal:37:37 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.1<0>
+modal:37:37 [1] NCCL INFO Initialized NET plugin Socket
+modal:37:37 [1] NCCL INFO Could not get speed from /sys/class/net/eth0/speed. Defaulting to 10 Gbps.
+modal:37:37 [1] NCCL INFO Assigned NET plugin Socket to comm
+modal:37:37 [1] NCCL INFO ncclOsDlopen(libnccl-rma.so) failed: libnccl-rma.so: cannot open shared object file: No such file or directory
+modal:37:37 [1] NCCL INFO RMA/Plugin: Could not find: libnccl-rma.so
+modal:37:37 [1] NCCL INFO RMA/Plugin: Failed to load external plugin libnccl-rma.so, dlHandle: (nil), ncclRma: (nil)
+
+[2026-09-17 10:33:34] modal:37:37 [1] misc/ibvwrap.cc:185 (wrap_ibv_alloc_pd) NCCL WARN lib wrapper not initialized.
+modal:37:37 [1] NCCL INFO transport/net_ib/gdr.cc:55 (ibDmaBufSupportInitOnce) -> 3
+modal:37:37 [1] NCCL INFO Unable to use GIN: Peermem is not supported, nor DMA-BUF.
+modal:37:37 [1] NCCL INFO RMA/Plugin: Failed to initialize any plugin
+modal:37:37 [1] NCCL INFO ncclOsDlopen(libnccl-gin.so) failed: libnccl-gin.so: cannot open shared object file: No such file or directory
+modal:37:37 [1] NCCL INFO GIN/Plugin: Could not find: libnccl-gin.so
+modal:37:37 [1] NCCL INFO GIN/Plugin: Failed to load external plugin libnccl-gin.so, dlHandle: (nil), ncclGin: (nil)
+modal:37:37 [1] NCCL INFO GIN/Plugin: Failed to initialize any GIN plugin
+modal:37:37 [1] NCCL INFO Using network Socket
+modal:37:37 [1] NCCL INFO mem_manager.cc:36 (ncclMemManagerInit) Host Calloc Size 136 pointer 0xADDR
+modal:37:37 [1] NCCL INFO MemManager: Initialized for device 1
+modal:37:37 [1] NCCL INFO Loaded NVML from libnvidia-ml.so.1
+modal:36:36 [0] NCCL INFO init.cc:535 (commAlloc) Host Calloc Size 16 pointer 0xADDR
+modal:36:36 [0] NCCL INFO init.cc:536 (commAlloc) Host Calloc Size 16 pointer 0xADDR
+modal:36:36 [0] NCCL INFO misc/utils.cc:282 (allocateSpilled) memory stack hunk malloc(65536)
+modal:36:36 [0] NCCL INFO init.cc:546 (commAlloc) Host Calloc Size 8 pointer 0xADDR
+modal:36:36 [0] NCCL INFO [Rank 0] ncclCommInitRankConfig comm 0xADDR rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 80000 commId 0xCOMMID - Init START
+modal:36:36 [0] NCCL INFO bootstrap.cc:689 (bootstrapInit) Host Calloc Size 504 pointer 0xADDR
+modal:36:48 [0] NCCL INFO bootstrap.cc:330 (bootstrapRoot) Host Calloc Size 256 pointer 0xADDR
+modal:36:48 [0] NCCL INFO bootstrap.cc:331 (bootstrapRoot) Host Calloc Size 56 pointer 0xADDR
+modal:37:37 [1] NCCL INFO init.cc:535 (commAlloc) Host Calloc Size 16 pointer 0xADDR
+modal:37:37 [1] NCCL INFO init.cc:536 (commAlloc) Host Calloc Size 16 pointer 0xADDR
+modal:37:37 [1] NCCL INFO misc/utils.cc:282 (allocateSpilled) memory stack hunk malloc(65536)
+modal:37:37 [1] NCCL INFO init.cc:546 (commAlloc) Host Calloc Size 8 pointer 0xADDR
+modal:37:37 [1] NCCL INFO [Rank 1] ncclCommInitRankConfig comm 0xADDR rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 80030 commId 0xCOMMID - Init START
+modal:37:37 [1] NCCL INFO bootstrap.cc:689 (bootstrapInit) Host Calloc Size 504 pointer 0xADDR
+modal:37:37 [1] NCCL INFO Socket handshake magic 0x564ab9f2fc4b9d6c (built-in default)
+modal:37:37 [1] NCCL INFO bootstrap.cc:817 (bootstrapInit) Host Calloc Size 56 pointer 0xADDR
+modal:37:37 [1] NCCL INFO bootstrap.cc:818 (bootstrapInit) Host Calloc Size 96 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:817 (bootstrapInit) Host Calloc Size 56 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:818 (bootstrapInit) Host Calloc Size 96 pointer 0xADDR
+modal:37:37 [1] NCCL INFO bootstrap.cc:823 (bootstrapInit) Host Calloc Size 16 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:823 (bootstrapInit) Host Calloc Size 16 pointer 0xADDR
+modal:37:37 [1] NCCL INFO bootstrap.cc:831 (bootstrapInit) Host Calloc Size 56 pointer 0xADDR
+modal:37:37 [1] NCCL INFO bootstrap.cc:837 (bootstrapInit) Host Calloc Size 112 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:831 (bootstrapInit) Host Calloc Size 56 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:837 (bootstrapInit) Host Calloc Size 112 pointer 0xADDR
+modal:36:36 [0] NCCL INFO RAS network listening socket at 10.0.0.1<58021>
+modal:37:37 [1] NCCL INFO RAS network listening socket at 10.0.0.1<47386>
+modal:37:37 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+modal:36:36 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+modal:36:36 [0] NCCL INFO ras/ras.cc:127 (ncclRasCommInit) Mem Realloc old size 0, new size 256 pointer 0xADDR
+modal:36:49 [0] NCCL INFO RAS thread started
+modal:37:37 [1] NCCL INFO ras/ras.cc:127 (ncclRasCommInit) Mem Realloc old size 0, new size 256 pointer 0xADDR
+modal:37:37 [1] NCCL INFO bootstrap.cc:633 (ringAllInfo) Host Calloc Size 240 pointer 0xADDR
+modal:36:49 [0] NCCL INFO ras/ras.cc:690 (rasGetNewPollEntry) Mem Realloc old size 0, new size 32 pointer 0xADDR
+modal:36:36 [0] NCCL INFO bootstrap.cc:633 (ringAllInfo) Host Calloc Size 240 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS thread started
+modal:37:50 [0] NCCL INFO ras/ras.cc:690 (rasGetNewPollEntry) Mem Realloc old size 0, new size 32 pointer 0xADDR
+modal:37:37 [1] NCCL INFO Bootstrap timings total 0.003468 (create 0.000217, send 0.000447, recv 0.000895, ring 0.000305, delay 0.000000)
+modal:37:37 [1] NCCL INFO init.cc:1035 (initTransportsRank) Host Calloc Size 432 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS handling local addRanks request (old nRasPeers 0)
+modal:36:36 [0] NCCL INFO Bootstrap timings total 0.005747 (create 0.000373, send 0.000575, recv 0.002517, ring 0.000343, delay 0.000003)
+modal:37:50 [0] NCCL INFO ras/peers.cc:119 (rasRanksConvertToPeers) Host Calloc Size 128 pointer 0xADDR
+modal:37:50 [0] NCCL INFO ras/peers.cc:235 (rasPeersUpdate) Host Calloc Size 128 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS finished local processing of addRanks request (new nRasPeers 2, nRankPeers 2)
+modal:36:49 [0] NCCL INFO RAS handling local addRanks request (old nRasPeers 0)
+modal:37:50 [0] NCCL INFO RAS peer 0: socket 10.0.0.1<47386>, pid 37, GPU 1 [this process]
+modal:36:49 [0] NCCL INFO ras/peers.cc:119 (rasRanksConvertToPeers) Host Calloc Size 128 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS peer 1: socket 10.0.0.1<58021>, pid 36, GPU 0
+modal:36:49 [0] NCCL INFO ras/peers.cc:235 (rasPeersUpdate) Host Calloc Size 128 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS peersHash 0xc48040ddfb98df08
+modal:37:50 [0] NCCL INFO ras/peers.cc:695 (rasLinkReinitConns) Host Calloc Size 32 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS link 1: opening new primary connection with 10.0.0.1<58021>
+modal:36:36 [0] NCCL INFO init.cc:1035 (initTransportsRank) Host Calloc Size 432 pointer 0xADDR
+modal:37:50 [0] NCCL INFO ras/rasnet.cc:53 (getNewConnEntry) Host Calloc Size 160 pointer 0xADDR
+modal:36:49 [0] NCCL INFO RAS finished local processing of addRanks request (new nRasPeers 2, nRankPeers 2)
+modal:37:50 [0] NCCL INFO ras/rasnet.cc:405 (getNewSockEntry) Host Calloc Size 168 pointer 0xADDR
+modal:36:49 [0] NCCL INFO ras/peers.cc:695 (rasLinkReinitConns) Host Calloc Size 32 pointer 0xADDR
+modal:36:49 [0] NCCL INFO RAS link 1: calculated deferred primary connection with 10.0.0.1<47386>
+modal:36:49 [0] NCCL INFO ras/peers.cc:695 (rasLinkReinitConns) Host Calloc Size 32 pointer 0xADDR
+modal:36:49 [0] NCCL INFO RAS link -1: calculated deferred primary connection with 10.0.0.1<47386>
+modal:36:49 [0] NCCL INFO ras/rasnet.cc:405 (getNewSockEntry) Host Calloc Size 168 pointer 0xADDR
+modal:37:50 [0] NCCL INFO ras/peers.cc:695 (rasLinkReinitConns) Host Calloc Size 32 pointer 0xADDR
+modal:37:50 [0] NCCL INFO RAS link -1: calculated existing primary connection with 10.0.0.1<58021>
+modal:36:49 [0] NCCL INFO RAS new incoming socket connection from 10.0.0.1<17934>
+modal:37:37 [1] NCCL INFO graph/xml.h:79 (xmlAlloc) Host Calloc Size 3610632 pointer 0xADDR
+modal:36:36 [0] NCCL INFO graph/xml.h:79 (xmlAlloc) Host Calloc Size 3610632 pointer 0xADDR
+modal:36:49 [0] NCCL INFO RAS handling connInit from 10.0.0.1<17934> (version 2.30.7, listeningAddr 10.0.0.1<47386>, peersHash 0xc48040ddfb98df08, deadPeersHash 0x0)
+modal:36:49 [0] NCCL INFO ras/rasnet.cc:53 (getNewConnEntry) Host Calloc Size 160 pointer 0xADDR
+modal:36:36 [0] NCCL INFO Could not find real path of /sys/class/pci_bus/0000:80/../../0000:80:00.0
+modal:37:50 [0] NCCL INFO RAS handling connInitAck from 10.0.0.1<58021> (nack 0)
+modal:37:37 [1] NCCL INFO Could not find real path of /sys/class/pci_bus/0000:80/../../0000:80:03.0
+modal:37:50 [0] NCCL INFO RAS established connection with 10.0.0.1<58021> (sendQ empty, experiencingDelays 0, startRetryTime 0.00s)
+modal:37:37 [1] NCCL INFO Topology detection: could not read /sys/devices/system/node/node4294967295/cpumap, using empty affinity
+modal:36:36 [0] NCCL INFO Topology detection: could not read /sys/devices/system/node/node4294967295/cpumap, using empty affinity
+modal:37:37 [1] NCCL INFO Could not find real path of /sys/class/pci_bus/fffffff/../../fffffff:ff:f
+modal:37:37 [1] NCCL INFO Could not get device class for NVLink target fffffff:ff:ff.0, assuming NVSwitch
+modal:37:37 [1] NCCL INFO TOPO/NET : Importing network plugins to topology
+modal:37:37 [1] NCCL INFO Could not get speed from /sys/class/net/eth0/speed. Defaulting to 10 Gbps.
+modal:36:36 [0] NCCL INFO Could not find real path of /sys/class/pci_bus/fffffff/../../fffffff:ff:f
+modal:36:36 [0] NCCL INFO Could not get device class for NVLink target fffffff:ff:ff.0, assuming NVSwitch
+modal:36:36 [0] NCCL INFO TOPO/NET : Importing network plugins to topology
+modal:37:37 [1] NCCL INFO NET/Socket : GPU Direct RDMA Disabled for HCA 0 'eth0'
+modal:37:37 [1] NCCL INFO ncclTopoPop

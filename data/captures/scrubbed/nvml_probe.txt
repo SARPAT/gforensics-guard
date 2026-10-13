@@ -1,0 +1,6 @@
+slowdown temp: 89
+shutdown temp: 92
+pcie max gen/width: 4 16
+pcie cur gen/width: 4 16
+remap: (0, 0, 0, 0)
+throttle: 0x1
