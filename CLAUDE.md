@@ -9,10 +9,12 @@ Build and deploy **Gforensics Guard**: a GPU-fleet incident agent that **investi
 ## 1. Working rules (NON-NEGOTIABLE)
 Saransh must understand everything built. No one-shot black boxes.
 
+**Autonomy mode (Saransh, 2026-10-13):** discuss with Saransh ONLY at the start of each checkpoint (the PLAN step). After approval, test, iterate, adjust the plan and build fast without waiting; use subagents / sibling threads heavily for parallel work. Interrupt him only for actions that need him on platform.armoriq.ai (onboarding, policies, approvals, dashboard toggles) or for real blockers. Keys, verdict honesty and the end-of-checkpoint EXPLAIN still apply.
+
 **Gate rule — every checkpoint:**
-1. **PLAN** — what will be built + why (≤10 lines). WAIT for approval.
-2. **BUILD** — implement only the approved scope.
-3. **RUN** — give ONE command for Saransh to verify himself.
+1. **PLAN** — what will be built + why (≤10 lines). WAIT for approval (the only mandatory wait).
+2. **BUILD** — implement the approved scope; iterate freely within it.
+3. **RUN** — run it yourself (via Remote Control on his laptop when keys are needed), then give ONE command for Saransh to verify himself.
 4. **EXPLAIN** — 5 bullets: what exists now · key files · ArmorIQ call used · one tradeoff · what is simulated/faked.
 5. **COMMIT** — `git commit -m "CP-n: ..."`, update `PROGRESS.md`.
 
@@ -30,6 +32,8 @@ Do NOT start a checkpoint before the previous one passes its gate. Do NOT start 
 
 **Scope cuts if behind (in order):** kill switch → lineage page polish → fleet size (→4 nodes).
 **Untouchable:** split-screen injection scene, RMA trap scene, authority expansion + approval hold.
+
+**Remote Control (running things on Saransh's laptop):** his laptop serves the folder `/home/patel/Documents/gforensics-guard` (it has `.venv` and the gitignored `.env` with the keys) via `env -u ANTHROPIC_API_KEY claude remote-control` (spawn mode: same-dir). Any thread can start a session there with `start_rc_session` (folder from `list_devices`). Workflow: cloud thread commits to its `claude/...` branch and pushes → laptop session does `git fetch` + `git checkout <branch>` + `git pull --ff-only` → runs the script → reports stdout. The laptop never commits, pushes or edits `.env`, and never prints key values. If the laptop isn't connected, ask Saransh to restart the command above.
 
 ## 2. Communication style
 - Bold section headers, point-wise breakdowns, concrete examples.
