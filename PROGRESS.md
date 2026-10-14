@@ -37,3 +37,5 @@ Deadline 17 Oct 11:59 PM IST · live demo must work 17–21 Oct · ArmorTools Pr
 
 ## ArmorTools (tools.armoriq.ai) vs platform.armoriq.ai
 Same workspace name, but a separate, empty workspace aimed at coding assistants (ArmorClaude/ArmorCodex): 0 keys, agents, policies, plans. Pro is active there (FLOWSTATEPRO). Our SDK traffic lives only on platform.armoriq.ai. Open: ask organizers whether platform.armoriq.ai counts as "the console" for the video; optional ArmorClaude install so our own build sessions show up in ArmorTools.
+
+**Decision (Oct 14):** no way to create server-side agent policies in ArmorTools (docs "Two enforcement points"; Policy Studio = ArmorClaude plugin only; experiment: all-allow profile v1 left our agent at `no_active_policy`). Enforcement stays on platform.armoriq.ai; video shows both consoles with that framing.
