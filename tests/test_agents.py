@@ -60,6 +60,15 @@ class FakeGateway:
             v.data = fn(self.fleet, **params) if mcp == "gfg-telemetry" else fn(self.fleet, **params, caller=actor)
         return v
 
+    def call_awaiting_approval(self, token, actor, mcp, tool, params, requester, wait_s,
+                               on_pending=None):
+        if on_pending:
+            on_pending("deleg-1")
+        extra = {"_delegation_id": "deleg-1"} if self.approve == "approved" else None
+        v = self.call(token, actor, mcp, tool, params, extra)
+        v.approval_id = "deleg-1"
+        return v
+
     def request_approval(self, plan, held, requester, amount):
         return "deleg-1"
 
@@ -195,3 +204,11 @@ def test_narrator_salvages_truncated_reply():
     cut = '{"narrative": "n", "suggested_actions": [{"tool": "drain_nodes", "params": {"nodes": ["node-09"]}, "because": "adm'
     out = parse_reply(cut)
     assert out["narrative"] == "n" and out["suggested_actions"][0]["params"] == {"nodes": ["node-09"]}
+
+
+def test_rejected_approval_stays_held_and_run_continues(fleet):
+    inject_scene(fleet, "xid79")
+    gw = FakeGateway(fleet, {"drain_node": "HELD"}, approve="rejected")
+    lin = run(gw, _incident(requester="sre@example.com", approval_wait_s=1))
+    assert "awaiting approval: ['drain_node']" in lin.outcome
+    assert not fleet.node("node-07").drained

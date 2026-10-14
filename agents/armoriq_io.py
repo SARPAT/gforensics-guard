@@ -12,14 +12,14 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import asdict, dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from armoriq_sdk import (ArmorIQClient, ArmorIQException, IntentMismatchException,
-                         PolicyBlockedException, PolicyHoldException)
-from armoriq_sdk.models import DelegationRequestParams
+from armoriq_sdk import (ArmorIQClient, ArmorIQException, DelegationException,
+                         IntentMismatchException, PolicyBlockedException, PolicyHoldException)
+from armoriq_sdk.models import DelegationRequestParams, InvokeOptions
 
 TOKEN_VALIDITY_S = 600
 
@@ -155,9 +155,34 @@ class ArmorIQGateway:
         v = Verdict(actor, mcp, tool, dict(params), "ERROR", "ERROR",
                     plan_hash=getattr(token, "plan_hash", ""),
                     delegated=bool(getattr(token, "subtree_delegation", None)))
+        return self._verdict(v, lambda: self.client.invoke(
+            mcp, tool, token, {**params, **(extra or {})}, user_email=self.user_email))
+
+    def call_awaiting_approval(self, token, actor: str, mcp: str, tool: str, params: dict,
+                               requester_email: str, wait_s: int,
+                               on_pending: Callable[[str], Any] | None = None) -> Verdict:
+        """A HELD call, handed to the SDK's own approval flow (client.invoke_with_policy):
+        it re-invokes, files the delegation request, polls it, re-invokes with the
+        approval and marks it executed. We only translate the outcome into a Verdict."""
+        v = Verdict(actor, mcp, tool, dict(params), "ERROR", "ERROR",
+                    plan_hash=getattr(token, "plan_hash", ""),
+                    delegated=bool(getattr(token, "subtree_delegation", None)))
+
+        def hold(info):
+            if info.delegation_id and not v.approval_id:
+                v.approval_id = info.delegation_id
+                if on_pending:
+                    on_pending(info.delegation_id)
+
+        opts = InvokeOptions(wait_for_approval=True, user_email=requester_email,
+                             delegation_timeout_ms=wait_s * 1000, on_hold=hold)
+        return self._verdict(v, lambda: self.client.invoke_with_policy(
+            mcp, tool, token, params=dict(params), options=opts))
+
+    @staticmethod
+    def _verdict(v: Verdict, invoke: Callable[[], Any]) -> Verdict:
         try:
-            res = self.client.invoke(mcp, tool, token, {**params, **(extra or {})},
-                                     user_email=self.user_email)
+            res = invoke()
             v.decision, v.source, v.data = "ALLOWED", "SERVER", tool_output(res.result)
             if res.status == "error":
                 v.reason = "tool returned an error payload"
@@ -168,6 +193,9 @@ class ArmorIQGateway:
             v.delegation_context = {"delegation_context": e.delegation_context, "metadata": e.metadata}
         except PolicyBlockedException as e:
             v.decision, v.source, v.reason = "BLOCKED", "SERVER", f"{e} (reason={e.reason})"
+        except DelegationException as e:   # approval rejected / expired / timed out: still held
+            v.decision, v.source, v.reason = "HELD", "SERVER", f"approval not granted: {e}"
+            v.approval_id = v.approval_id or getattr(e, "delegation_id", None)
         except ArmorIQException as e:
             v.reason = f"{type(e).__name__}: {e}"
         return v

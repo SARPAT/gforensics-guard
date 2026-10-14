@@ -172,38 +172,28 @@ def _delegate(gw: ArmorIQGateway, lin: Lineage, plan: CommittedPlan, agent: str)
 
 
 def _approval(gw, lin, inc: Incident, plan: CommittedPlan, deleg: dict, held: Verdict) -> Verdict:
-    """HELD -> ArmorIQ delegation request -> a human decides -> re-invoke with its id."""
+    """HELD -> ArmorIQ delegation request -> a human decides -> re-invoke.
+
+    approval_wait_s > 0: the SDK's own approval flow runs it end to end
+    (invoke_with_policy: request, poll, re-invoke with the approval, mark executed).
+    approval_wait_s <= 0: file the request and park the step as pending."""
     if not inc.requester:
         lin.add("approval", tool=held.tool, status="not requested (no requester email)")
         return held
+    if inc.approval_wait_s > 0:
+        v = gw.call_awaiting_approval(
+            deleg["token"], "remediator", held.mcp, held.tool, held.params, inc.requester,
+            inc.approval_wait_s,
+            on_pending=lambda did: lin.add("approval", tool=held.tool, delegation_id=did,
+                                           status="pending", wait_s=inc.approval_wait_s))
+        lin.add("approval", tool=held.tool, delegation_id=v.approval_id,
+                status="approved" if v.decision == "ALLOWED" else v.reason or v.decision)
+        return lin.verdict(v, after_approval=v.approval_id)
     try:
         did = gw.request_approval(plan, held, inc.requester, gpus_affected(held.tool, held.params))
     except Exception as e:  # noqa: BLE001
         lin.add("approval", tool=held.tool, status="request failed", error=f"{type(e).__name__}: {e}")
         return held
     held.approval_id = did
-    lin.add("approval", tool=held.tool, delegation_id=did, status="pending",
-            wait_s=inc.approval_wait_s)
-    if inc.approval_wait_s <= 0:
-        return held
-    deadline, status = time.time() + inc.approval_wait_s, "pending"
-    while time.time() < deadline:
-        try:
-            status = gw.approval_status(did)
-        except Exception as e:  # noqa: BLE001
-            status = f"status error {type(e).__name__}"
-        if status in ("approved", "rejected", "expired"):
-            break
-        time.sleep(5)
-    lin.add("approval", tool=held.tool, delegation_id=did, status=status)
-    if status != "approved":
-        return held
-    v = lin.verdict(gw.call(deleg["token"], "remediator", held.mcp, held.tool, held.params,
-                            extra={"_delegation_id": did}), after_approval=did)
-    v.approval_id = did
-    if v.decision == "ALLOWED":
-        try:
-            gw.mark_executed(did, plan, inc.requester)
-        except Exception as e:  # noqa: BLE001
-            lin.add("approval", delegation_id=did, status=f"mark_executed failed: {e}")
-    return v
+    lin.add("approval", tool=held.tool, delegation_id=did, status="pending", wait_s=0)
+    return held
