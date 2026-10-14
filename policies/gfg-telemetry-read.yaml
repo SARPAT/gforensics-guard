@@ -1,0 +1,36 @@
+# Live copy of the server-side policy on platform.armoriq.ai (YAML lens), 2026-10-14.
+# This file documents what ArmorIQ enforces; the platform is the source of truth.
+# Check drift: python scripts/policy_check.py  (laptop, compares against an export in policies/live/)
+name: gfg-telemetry-read
+version: 1.0.0
+scope:
+  target_type: mcp
+  target: 424b7691-6b83-4496-ab54-5a0e400ada8f   # gfg-telemetry
+  caller: members
+default_action: block
+priority: 40
+rules:
+  - tool: fleet_summary
+    action: allow
+  - tool: get_dcgm_metrics
+    action: allow
+  - tool: get_diag_result
+    action: allow
+  - tool: get_dmesg
+    action: allow
+  - tool: get_kmsg
+    action: allow
+  - tool: get_node_jobs
+    action: allow
+  - tool: get_nvlink_errors
+    action: allow
+  - tool: get_nvlink_status
+    action: allow
+  - tool: get_smi_query
+    action: allow
+  - tool: get_xid_events
+    action: allow
+  - tool: list_nodes
+    action: allow
+  - tool: read_status       # CP0 spike tool, no longer served
+    action: hold

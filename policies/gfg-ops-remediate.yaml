@@ -1,0 +1,25 @@
+# Live copy of the server-side policy on platform.armoriq.ai (YAML lens), 2026-10-14.
+# This file documents what ArmorIQ enforces; the platform is the source of truth.
+name: gfg-ops-remediate
+version: 1.0.0
+scope:
+  target_type: mcp
+  target: 77a703e7-3e48-463e-8171-bbddbf456104   # gfg-ops
+  caller: members
+default_action: block          # any write tool not listed = BLOCKED
+priority: 40                   # must equal gfg-telemetry-read (CP3 finding 4)
+rules:
+  - tool: cordon_node          # reversible, one node
+    action: allow
+  - tool: drain_node           # one node = 8 GPUs, the on-call SRE's authority
+    action: allow
+  - tool: drain_nodes          # bulk drain = blast radius beyond on-call authority
+    action: block
+  - tool: enable_persistence_mode
+    action: allow
+  - tool: open_rma_ticket      # irreversible, costs money: a second human decides
+    action: hold
+  - tool: reset_gpu            # disruptive: a second human decides
+    action: hold
+  - tool: uncordon_node
+    action: allow

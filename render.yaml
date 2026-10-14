@@ -16,5 +16,7 @@ services:
         sync: false
       - key: GFG_MCP_TOKEN      # optional: MCP paths require it when set (ArmorIQ proxy must send it)
         sync: false
+      - key: GFG_MCP_AUTH_MODE  # observe = let through + record how a token came in; enforce = 401 without it
+        value: enforce
       - key: GFG_ADMIN_TOKEN    # optional: guards /sim/reset and /sim/scene
         sync: false
