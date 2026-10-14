@@ -19,7 +19,7 @@ import re
 import httpx
 
 DEFAULT_BASE = "https://integrate.api.nvidia.com/v1"
-DEFAULT_MODEL = "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+DEFAULT_MODEL = "nvidia/nemotron-3-super-120b-a12b"
 
 OPS_TOOLS = ("cordon_node", "uncordon_node", "drain_node", "drain_nodes", "reset_gpu",
              "enable_persistence_mode", "open_rma_ticket")
