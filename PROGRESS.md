@@ -5,7 +5,7 @@
 | setup | ✅ done | HANDOFF.md, CLAUDE.md, captures @ 4eb6bcd |
 | CP0 | ✅ answered (attribution follow-up open) | ArmorIQ spike, T1–T5 below; scripts in `spike/` |
 | CP1 | ✅ done (PR #3 merged) | fleet-sim + fault injector + fleet-ops state, `sim/`, tests in `tests/` |
-| CP2 | 🔨 built, deploy + onboarding pending | `servers/`: gfg-telemetry (11 read tools) + gfg-ops (7 write tools), one FastAPI app, 82 tests |
+| CP2 | ✅ done (PR #4 merged, live on Render) | `servers/`: gfg-telemetry (11 read tools) + gfg-ops (7 write tools), one FastAPI app, 82 tests |
 
 ## CP0 results (2026-10-13, armoriq-sdk 0.6.10, all runs real against platform.armoriq.ai)
 
@@ -81,3 +81,14 @@ servers/common.py     caller label from X-GFG-Caller header (audit only); logs h
 scripts/cp2_smoke.py  laptop: list tools on both public MCPs + 3 invokes through ArmorIQ + audit log
 ```
 Verify: `python -m pytest tests/ -q` (82 tests). Live: `python scripts/cp2_smoke.py` on the laptop after deploy.
+
+**Live run 2026-10-14 00:30Z (laptop, master 70a9573, `scripts/cp2_smoke.py`), all verdicts real `[SERVER]`:**
+```
+both public MCPs list full tool sets (11 + 7) through the same platform slugs gfg-telemetry / gfg-ops
+get_xid_events(node-07)  BLOCKED  denied by OPA: policy_constraints_not_satisfied   (no policy allows it yet)
+drain_node(node-07)      HELD     held for approval by member policy rule           (CP0 cp0-hold-drain still active)
+drain_nodes(rack B)      BLOCKED  denied by OPA: policy_constraints_not_satisfied
+reached the fleet: nothing, gpus_out_of_service=0          token allowed_tools=[]
+```
+Open for CP4: allow rules for the 11 telemetry tools (platform default = block), tool re-sync on the platform MCP pages,
+decide whether to turn on GFG_MCP_TOKEN (needs the platform MCP registration to send the header).
