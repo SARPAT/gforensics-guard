@@ -6,8 +6,9 @@
 | CP0 | ✅ answered (attribution follow-up open) | ArmorIQ spike, T1–T5 below; scripts in `spike/` |
 | CP1 | ✅ done (PR #3 merged) | fleet-sim + fault injector + fleet-ops state, `sim/`, tests in `tests/` |
 | CP2 | ✅ done (PR #4 merged, live on Render) | `servers/`: gfg-telemetry (11 read tools) + gfg-ops (7 write tools), one FastAPI app, 82 tests |
-| CP4 | ✅ done (branch claude/cp4-policies-scenes-phuqo7) | `policies/` as code, `scripts/demo.py` scenes + compromised-planner variants, MCP token through the ArmorIQ proxy, 108 tests |
-| CP3 | ✅ done (PR pending) | `agents/`: rule-table diagnoser + orchestrator (plan → token → delegate_subtree → invoke → hold/approval), 98 tests, live runs below |
+| CP3 | ✅ done (PR #8 merged) | `agents/`: rule-table diagnoser + orchestrator (plan → token → delegate_subtree → invoke → hold/approval), 98 tests, live runs below |
+| CP4 | ✅ done (PR #9 merged) | `policies/` as code, `scripts/demo.py` scenes + compromised-planner variants, MCP token through the ArmorIQ proxy, 108 tests |
+| CP5 | ✅ built (PR pending) | `web/`: incident console, split screen, lineage report; `agents/naive.py` baseline; replays of recorded real runs |
 
 ## CP0 results (2026-10-13, armoriq-sdk 0.6.10, all runs real against platform.armoriq.ai)
 
@@ -188,3 +189,35 @@ MCP token                   direct call to /ops/mcp -> 401; through ArmorIQ with
 15. 4 policies active: gfg-telemetry-read, gfg-ops-remediate + stale cp0-allow-telemetry, cp0-hold-drain.
 
 Verify offline: `python -m pytest tests/ -q` (108). Live: `python scripts/demo.py --scene all --email <you>`.
+## CP5 (2026-10-14) — web UI + naive-agent baseline
+
+```
+web/routes.py     same FastAPI app as the MCP servers (one Render service)
+                    /            incident console: pick a scene, run, watch the timeline + fleet map
+                    /split       naive agent (NO ArmorIQ) vs Gforensics Guard, same alert, side by side
+                    /report/<id> intent-lineage report: objective -> signed plans (hash chain) -> delegations -> each call -> ArmorIQ's answer
+                    /api/runs    start a run (live | replay), /api/runs/<id>/stream = Server-Sent Events
+                    /api/approval/<id>  asks ArmorIQ for a held step's approval status (read-only)
+web/runs.py       run manager. LIVE = agents.orchestrator.run through ArmorIQ (one at a time, shared fleet);
+                  REPLAY = a recorded real run (web/recorded/*.json) played in its original order, fleet map rebuilt
+                  from the recorded fleet audit log. Emails scrubbed before anything leaves the server.
+agents/naive.py   same 7 reads + same LLM, NO rule table, NO ArmorIQ: runs every suggested action straight on its
+                  OWN sandbox Fleet(). LLM down -> scripted naive playbook, labelled as such in the timeline.
+web/static/       plain HTML/JS/CSS, light theme modelled on the ArmorIQ console; plain-language labels + jargon tooltips
+```
+
+Plain-language verdict labels (computed only from the event's own decision + source):
+```
+ALLOWED  SERVER     "Allowed by ArmorIQ"
+HELD     SERVER     "Waiting for a human approver"
+BLOCKED  SERVER     "Blocked by ArmorIQ policy"
+BLOCKED  SDK-LOCAL  "Stopped: not in the signed plan"   (refused by the ArmorIQ SDK before sending; said so in the tooltip)
+ERROR               "Error: did not run"                (never shown as allow/block)
+naive    EXECUTED   "Done. Nobody checked"
+```
+Recorded runs (laptop, scripts/demo.py, real ArmorIQ verdicts): split_screen (+compromised), rma_trap (+compromised), xid79,
+noise. The xid79 recording ends when a second member approved the held RMA in the ArmorIQ console.
+
+Verify offline: `python -m pytest tests/ -q` (118). Render env for live runs: ARMORIQ_API_KEY, LLM_API_KEY,
+ARMORIQ_MCP_GFG_{TELEMETRY,OPS}_TOKEN (= GFG_MCP_TOKEN), GFG_REQUESTER_EMAIL. Without the key the UI offers replays only.
+Laptop test against the deployed fleet: `GFG_FLEET_URL=https://gforensics-guard.onrender.com uvicorn servers.app:app --port 8765`.

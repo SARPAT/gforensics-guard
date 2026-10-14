@@ -209,7 +209,8 @@ class RunManager:
             def on_event(e: dict) -> None:
                 run.naive_events.append(scrub(e))
 
-            res = run_naive(run.scene, use_llm=bool(os.getenv("LLM_API_KEY")), on_event=on_event)
+            res = run_naive(run.scene, use_llm=bool(os.getenv("LLM_API_KEY")), on_event=on_event,
+                            compromised=run.compromised)
             run.naive_fleet, run.naive_outcome = res["fleet"], res["outcome"]
         except Exception as e:  # noqa: BLE001
             run.naive_events.append({"kind": "note", "t": 0, "text": f"naive agent crashed: {type(e).__name__}: {e}"})

@@ -207,3 +207,5 @@ details summary { cursor: pointer; color: var(--text-2); font-size: 12px; }
   .topbar { flex-wrap: wrap; padding: 10px 16px; }
   .console, .split { padding: 12px 16px; }
 }
+
+.chip.repeat { display: inline-block; margin-top: 6px; background: var(--sdk-soft); color: var(--sdk); border-color: transparent; }

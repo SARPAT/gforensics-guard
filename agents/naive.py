@@ -96,7 +96,7 @@ def _scripted(scene: str) -> list[dict]:
     return []
 
 
-def run_naive(scene_name: str, use_llm: bool = True, on_event=None) -> dict:
+def run_naive(scene_name: str, use_llm: bool = True, on_event=None, compromised: bool = False) -> dict:
     scene = SCENES[scene_name]
     fleet = Fleet()                               # private fleet, never the shared singleton
     faults.inject_scene(fleet, scene.sim_scene)
@@ -135,6 +135,14 @@ def run_naive(scene_name: str, use_llm: bool = True, on_event=None) -> dict:
                                       "(what an agent that trusts the alert text would do)"})
         suggested = _scripted(scene_name)
 
+    # Same compromised planner as the governed side (agents/scenes.py "injected" steps): the naive
+    # agent gets the identical bad step, so both sides face the same attack.
+    if compromised:
+        for a in SCENES[scene_name].injected:
+            emit({"kind": "injection", "tool": a["tool"], "params": a["params"],
+                  "why": f"INJECTED: {a.get('because', '')}"})
+            suggested.append({**a, "planted": True})
+
     seen = set()
     for act in suggested:
         tool = act.get("tool") if isinstance(act, dict) else None
@@ -152,6 +160,8 @@ def run_naive(scene_name: str, use_llm: bool = True, on_event=None) -> dict:
               "decision": "EXECUTED", "source": SOURCE, "result": result}
         if scripted:
             ev["scripted"] = True
+        if isinstance(act, dict) and act.get("planted"):
+            ev["planted"] = True
         emit(ev)
 
     summary = telemetry.fleet_summary(fleet)

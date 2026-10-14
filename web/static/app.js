@@ -157,7 +157,8 @@ const GFG = (() => {
       };
     }
     if (k === "injection") return {
-      icon: "☠", group: "expand", title: "Compromised planner slips a step into plan #2",
+      icon: "☠", group: side === "naive" ? "act" : "expand",
+      title: side === "naive" ? "Compromised planner adds a step" : "Compromised planner slips a step into plan #2",
       sub: `${toolHtml(e.tool)} ${esc(target(e.params))} · ${esc(e.why)}`,
       explain: "Demo of a worst case: the planner itself is compromised and writes a harmful step INTO the plan ArmorIQ signs. The signature can't make a bad step safe; ArmorIQ's policies still judge each call.",
     };
@@ -173,7 +174,7 @@ const GFG = (() => {
       };
     }
     if (k === "exec") return {
-      icon: "▶", group: "act", title: (e.scripted ? "Playbook runs: " : "Runs the AI's suggestion: ") + toolHtml(e.tool),
+      icon: "▶", group: "act", title: (e.planted ? "Runs the planted step: " : e.scripted ? "Playbook runs: " : "Runs the AI's suggestion: ") + toolHtml(e.tool),
       sub: `${esc(target(e.params))}${e.because ? ` · “${esc(String(e.because).slice(0, 110))}”` : ""}`,
       right: badge(e), cls: "EXECUTED",
       explain: `No checks at all. Result from the fleet: <span class="mono">${esc(JSON.stringify(e.result).slice(0, 300))}</span>`,
@@ -205,11 +206,23 @@ const GFG = (() => {
           if (lastGroup !== "investigate") { lastGroup = "investigate"; head("investigate"); }
           return compactReads(el, e.kind === "read" ? { ...e, params: { node: e.node } } : e, onSelect);
         }
+        const key = e.kind === "call" ? [e.actor, e.tool, e.decision, e.source].join("|") : null;
+        const prev = el.lastElementChild;
+        if (key && prev && prev._key === key) {
+          prev._count = (prev._count || 1) + 1;
+          prev._events.push(e);
+          let c = prev.querySelector(".repeat");
+          if (!c) { c = document.createElement("span"); c.className = "chip repeat"; prev.querySelector(".row").after(c); }
+          c.textContent = `×${prev._count} attempts (${[...new Set(prev._events.map((x) => target(x.params)))].slice(0, 4).join(", ")}${prev._count > 4 ? ", …" : ""})`;
+          return prev;
+        }
         const d = describe(e, side);
         if (d.group && d.group !== lastGroup) { lastGroup = d.group; head(d.group); }
         const row = document.createElement("div");
         row.className = "ev fresh";
         row.dataset.i = n++;
+        row._key = key;
+        row._events = [e];
         row.innerHTML = `<div class="time">${e.t !== undefined ? Number(e.t).toFixed(1) + "s" : ""}</div>
           <div class="ico">${d.icon}</div>
           <div><div class="row"><div class="title">${d.title}</div>${d.right || ""}</div>
