@@ -252,6 +252,32 @@ def test_require_token_enforced():
     assert _get(g, {"X-API-Key": "s3cret"}) == 200
 
 
+def _armoriq_hdr(cred) -> dict:
+    import base64
+    import json as _json
+    return {"X-Armoriq-MCP-Auth": base64.b64encode(_json.dumps(cred).encode()).decode()}
+
+
+def test_require_token_accepts_armoriq_sdk_header():
+    from servers.auth import LAST_SEEN
+    g = RequireToken(Starlette(routes=[Route("/", lambda req: PlainTextResponse("hi"))]), "s3cret",
+                     label="t")
+    assert _get(g, _armoriq_hdr({"authType": "bearer", "token": "s3cret"})) == 200
+    assert LAST_SEEN["t"]["via"] == "x-armoriq-mcp-auth" and LAST_SEEN["t"]["match"] is True
+    assert _get(g, _armoriq_hdr({"authType": "api_key", "apiKey": "s3cret", "headerName": "X"})) == 200
+    assert _get(g, _armoriq_hdr({"authType": "bearer", "token": "nope"})) == 401
+    assert _get(g, {"X-Armoriq-MCP-Auth": "not base64 json!"}) == 401
+    assert "s3cret" not in str(LAST_SEEN)
+
+
+def test_require_token_observe_mode_lets_through_and_records():
+    from servers.auth import LAST_SEEN
+    g = RequireToken(Starlette(routes=[Route("/", lambda req: PlainTextResponse("hi"))]), "s3cret",
+                     mode="observe", label="o")
+    assert _get(g) == 200
+    assert LAST_SEEN["o"] == {**LAST_SEEN["o"], "via": "none", "match": False, "mode": "observe"}
+
+
 # ---------------------------------------------------------------- 6. /sim admin + /health
 
 def test_health(server_loop):

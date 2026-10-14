@@ -29,11 +29,12 @@ from starlette.applications import Starlette
 import sim
 from sim import faults, telemetry
 from servers import fleet_ops, telemetry as telemetry_mcp
-from servers.auth import RequireToken
+from servers.auth import LAST_SEEN, RequireToken
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
 
 MCP_TOKEN = os.getenv("GFG_MCP_TOKEN") or None
+MCP_AUTH_MODE = os.getenv("GFG_MCP_AUTH_MODE", "enforce")
 ADMIN_TOKEN = os.getenv("GFG_ADMIN_TOKEN") or None
 
 
@@ -55,7 +56,8 @@ app = FastAPI(title="gforensics-guard MCP servers (CP2)", lifespan=lifespan)
 @app.get("/health")
 def health() -> dict:
     return {"ok": True, "servers": [telemetry_mcp.NAME, fleet_ops.NAME],
-            "mcp_auth": MCP_TOKEN is not None, "simulated": True}
+            "mcp_auth": MCP_TOKEN is not None, "mcp_auth_mode": MCP_AUTH_MODE if MCP_TOKEN else "off",
+            "mcp_auth_last_seen": LAST_SEEN, "simulated": True}
 
 
 def _admin(token: str | None) -> None:
@@ -88,8 +90,8 @@ def sim_scene(scene: str, reset: bool = True, x_admin_token: str | None = Header
     return {"scene": scene, "injected": injected, "summary": telemetry.fleet_summary(f)}
 
 
-app.mount("/telemetry", RequireToken(both_transports(telemetry_mcp.server), MCP_TOKEN))
-app.mount("/ops", RequireToken(both_transports(fleet_ops.server), MCP_TOKEN))
+app.mount("/telemetry", RequireToken(both_transports(telemetry_mcp.server), MCP_TOKEN, MCP_AUTH_MODE, "telemetry"))
+app.mount("/ops", RequireToken(both_transports(fleet_ops.server), MCP_TOKEN, MCP_AUTH_MODE, "ops"))
 
 
 if __name__ == "__main__":
