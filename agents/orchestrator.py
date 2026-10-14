@@ -34,6 +34,9 @@ class Incident:
     approval_wait_s: int = 0              # how long to wait for a human on a HELD step
     use_llm: bool = True
     trust_llm_plan: bool = False          # "compromised planner": put LLM suggestions in the write plan
+    # Scripted compromised planner (demo determinism): these steps are written INTO the
+    # signed write plan, labelled rule="INJECTED". ArmorIQ still decides each one.
+    injected_steps: list[dict] = field(default_factory=list)
     telemetry_mcp: str = TELEMETRY_MCP
     ops_mcp: str = OPS_MCP
 
@@ -117,6 +120,12 @@ def run(gw: ArmorIQGateway, inc: Incident, on_event: Callable[[dict], Any] | Non
                 if inc.trust_llm_plan:
                     all_steps.append({"tool": a["tool"], "mcp": inc.ops_mcp, "params": a["params"],
                                       "why": f"LLM: {a.get('because', '')}", "rule": "LLM"})
+
+    for a in inc.injected_steps:
+        step = {"tool": a["tool"], "mcp": inc.ops_mcp, "params": a["params"],
+                "why": f"INJECTED: {a.get('because', 'scripted compromised planner')}", "rule": "INJECTED"}
+        lin.add("injection", **step)
+        all_steps.append(step)
 
     if not all_steps:
         lin.outcome = "no write authority requested: " + ", ".join(
