@@ -132,11 +132,6 @@ def main() -> None:
         if st in ("approved", "rejected", "expired"):
             break
         time.sleep(5)
-    if last == "approved":
-        verdict("parent drain_node after approval",
-                lambda: client.invoke(OPS, "drain_node", tok,
-                                      {"node": "node-07", "_delegation_id": req.delegation_id},
-                                      user_email=email))
     state = httpx.get(f"{BASE}/sim/state", timeout=60).json()
     print(f"[4] reached the fleet: {[(e['tool'], e['caller']) for e in state['audit_log']]}")
 

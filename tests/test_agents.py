@@ -52,21 +52,10 @@ class FakeGateway:
             v.decision, v.reason = "BLOCKED", "not in plan"
             return v
         decision = self.outcomes.get(tool, "ALLOWED")
-        if decision == "HELD" and extra and extra.get("_delegation_id"):
-            decision = "ALLOWED"
         v.decision = decision
         if decision == "ALLOWED":
             fn = getattr(sim_tel, tool, None) if mcp == "gfg-telemetry" else getattr(sim_ops, tool)
             v.data = fn(self.fleet, **params) if mcp == "gfg-telemetry" else fn(self.fleet, **params, caller=actor)
-        return v
-
-    def call_awaiting_approval(self, token, actor, mcp, tool, params, requester, wait_s,
-                               on_pending=None):
-        if on_pending:
-            on_pending("deleg-1")
-        extra = {"_delegation_id": "deleg-1"} if self.approve == "approved" else None
-        v = self.call(token, actor, mcp, tool, params, extra)
-        v.approval_id = "deleg-1"
         return v
 
     def request_approval(self, plan, held, requester, amount):
@@ -74,9 +63,6 @@ class FakeGateway:
 
     def approval_status(self, did):
         return self.approve or "pending"
-
-    def mark_executed(self, did, plan, email):
-        pass
 
 
 def investigate(fleet, node):
@@ -170,12 +156,13 @@ def test_orchestrator_stops_at_block(fleet):
     assert lin.outcome.startswith("stopped at drain_node: BLOCKED")
 
 
-def test_orchestrator_resumes_after_human_approval(fleet):
+def test_human_approval_is_recorded_but_agent_never_self_releases(fleet):
     inject_scene(fleet, "xid79")
     gw = FakeGateway(fleet, {"drain_node": "HELD"}, approve="approved")
     lin = run(gw, _incident(requester="sre@example.com", approval_wait_s=1))
-    assert lin.outcome.startswith("remediation complete")
-    assert fleet.node("node-07").drained and len(fleet.rma_tickets) == 1
+    assert [e["status"] for e in lin.events if e["kind"] == "approval"] == ["pending", "approved"]
+    assert "awaiting approval: ['drain_node']" in lin.outcome and not fleet.node("node-07").drained
+    assert all(not k.startswith("_") for _, _, prm in gw.calls for k in prm)
 
 
 def test_no_writes_planned_for_noise(fleet):
