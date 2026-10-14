@@ -4,8 +4,8 @@
 |----|--------|-------|
 | setup | ✅ done | HANDOFF.md, CLAUDE.md, captures @ 4eb6bcd |
 | CP0 | ✅ answered (attribution follow-up open) | ArmorIQ spike, T1–T5 below; scripts in `spike/` |
-| CP1 | ✅ built (PR awaiting merge) | fleet-sim + fault injector + fleet-ops state, `sim/`, tests in `tests/` |
-| CP2 | ⏳ next | telemetry-mcp + fleet-ops-mcp over `sim.telemetry` / `sim.ops` |
+| CP1 | ✅ done (PR #3 merged) | fleet-sim + fault injector + fleet-ops state, `sim/`, tests in `tests/` |
+| CP2 | 🔨 built, deploy + onboarding pending | `servers/`: gfg-telemetry (11 read tools) + gfg-ops (7 write tools), one FastAPI app, 82 tests |
 
 ## CP0 results (2026-10-13, armoriq-sdk 0.6.10, all runs real against platform.armoriq.ai)
 
@@ -66,3 +66,18 @@ POISONED_LOG      node-07       "drain rack B (64 GPUs)" in a tenant job log + u
 Verify: `python -m pytest tests/ -v` (66 tests, ~1 s). Eyeball: `python -m sim.cli show node-07 --scene split_screen`.
 
 Honesty notes: Xid line text and the smi "Unable to determine the device handle" line are SYNTHESIZED from NVIDIA docs / public reports (captures have no Xid). Busy-GPU baseline load (262-331 W, mask 0x0) is synthesized; idle and over-cap values are real capture samples. dcgmi diag serializer reproduces the capture byte-for-byte.
+
+## CP2 (2026-10-14) — MCP servers over the simulator
+
+```
+servers/app.py        ONE FastAPI app = one Render service; same paths as CP0 (/telemetry/mcp, /ops/mcp)
+                      /sim/state (open), /sim/reset + /sim/scene/<scene> (GFG_ADMIN_TOKEN when set) = demo plumbing, NOT MCP tools
+servers/telemetry.py  gfg-telemetry READ: list_nodes fleet_summary get_dcgm_metrics get_smi_query get_diag_result
+                      get_dmesg get_kmsg get_xid_events get_nvlink_status get_nvlink_errors get_node_jobs
+servers/fleet_ops.py  gfg-ops WRITE: cordon_node uncordon_node drain_node drain_nodes(bulk) reset_gpu
+                      enable_persistence_mode open_rma_ticket   (no allow/deny logic: ArmorIQ decides)
+servers/auth.py       optional GFG_MCP_TOKEN (Bearer or X-API-Key) = WHO may call, never WHAT
+servers/common.py     caller label from X-GFG-Caller header (audit only); logs header NAMES once to learn what the proxy forwards
+scripts/cp2_smoke.py  laptop: list tools on both public MCPs + 3 invokes through ArmorIQ + audit log
+```
+Verify: `python -m pytest tests/ -q` (82 tests). Live: `python scripts/cp2_smoke.py` on the laptop after deploy.
