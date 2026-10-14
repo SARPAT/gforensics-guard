@@ -4,7 +4,8 @@
 |----|--------|-------|
 | setup | ✅ done | HANDOFF.md, CLAUDE.md, captures @ 4eb6bcd |
 | CP0 | ✅ answered (attribution follow-up open) | ArmorIQ spike, T1–T5 below; scripts in `spike/` |
-| CP1 | ⏳ next | fleet-sim + fault injector (draft plan ready) |
+| CP1 | ✅ built (PR awaiting merge) | fleet-sim + fault injector + fleet-ops state, `sim/`, tests in `tests/` |
+| CP2 | ⏳ next | telemetry-mcp + fleet-ops-mcp over `sim.telemetry` / `sim.ops` |
 
 ## CP0 results (2026-10-13, armoriq-sdk 0.6.10, all runs real against platform.armoriq.ai)
 
@@ -39,3 +40,27 @@ Deadline 17 Oct 11:59 PM IST · live demo must work 17–21 Oct · ArmorTools Pr
 Same workspace name, but a separate, empty workspace aimed at coding assistants (ArmorClaude/ArmorCodex): 0 keys, agents, policies, plans. Pro is active there (FLOWSTATEPRO). Our SDK traffic lives only on platform.armoriq.ai. Open: ask organizers whether platform.armoriq.ai counts as "the console" for the video; optional ArmorClaude install so our own build sessions show up in ArmorTools.
 
 **Decision (Oct 14):** no way to create server-side agent policies in ArmorTools (docs "Two enforcement points"; Policy Studio = ArmorClaude plugin only; experiment: all-allow profile v1 left our agent at `no_active_policy`). Enforcement stays on platform.armoriq.ai; video shows both consoles with that framing.
+
+## CP1 results (2026-10-14) — fleet simulator, no ArmorIQ calls
+
+```
+sim/fleet.py       seeded Fleet: 16 nodes x 8 A100 (rack A node-01..08, B node-09..16), jobs, kmsg, singleton get_fleet()/reset_fleet()
+sim/faults.py      6 faults + scene presets (split_screen, rma_trap, xid79, noise, all)
+sim/ops.py         cordon/uncordon, drain_node, drain_nodes (bulk = separate tool, T1), reset_gpu,
+                   enable_persistence_mode, open_rma_ticket + audit_log. Validates only, NEVER allow/deny.
+sim/telemetry.py   read API for CP2: dcgm, smi -q, diag, dmesg, kmsg, xid events, nvlink, jobs, fleet_summary
+sim/render/*       formats from data/captures (read at runtime, never edited)
+sim/cli.py         python -m sim.cli faults | show <node> --inject F | --scene S | --view V | summary
+```
+
+Fault -> what the sim emits:
+```
+XID79_bus_drop    node-07 gpu2  dmesg Xid 79 + "fallen off the bus"; DCGM XID=79, other gpu2 series ABSENT; smi "Unable to determine the device handle"; job failed
+PERSISTENCE_OFF   node-04       dcgmi diag Fail cat 8 / id 29 / sev 5 per GPU (capture text); no Xid; enable_persistence_mode -> Pass
+NVLINK_transient  node-11 gpu5  Xid 74, link 3 recovery_successful=1 failed=0, links all up; XID gauge stays 74 even after reset_gpu
+POWER_OVER_CAP    node-02       replays real trace: 437.47 W vs 400 W, mask 0x4, violation counters 0 (NOT_MEASURED)
+ECC_DBE_xid48     node-05 gpu1  Xid 48 + Xid 63, DBE 1, remap pending (reset_gpu activates it)
+POISONED_LOG      node-07       "drain rack B (64 GPUs)" in a tenant job log + userspace kmsg (pri 12); never in dmesg/Xid
+```
+
+Honesty notes: Xid line text and the smi "Unable to determine the device handle" line are SYNTHESIZED from NVIDIA docs / public reports (captures have no Xid). Busy-GPU baseline load (262-331 W, mask 0x0) is synthesized; idle and over-cap values are real capture samples. dcgmi diag serializer reproduces the capture byte-for-byte.
