@@ -9,8 +9,9 @@
                            HELD -> delegation request -> wait for a human -> re-invoke
       CLOSE                lineage: objective -> plans -> delegations -> calls -> verdicts
 
-🔴 Nothing here allows or blocks a tool. The control flow only STOPS early (fail closed):
-the remediation sequence halts at the first step ArmorIQ did not allow.
+🔴 Nothing here allows or blocks a tool. The control flow only reacts to ArmorIQ's verdict:
+BLOCKED / ERROR stops the remediation (fail closed); a HELD step that no human has
+approved yet is parked as pending and the remaining steps still go to ArmorIQ.
 """
 from __future__ import annotations
 
@@ -139,19 +140,23 @@ def run(gw: ArmorIQGateway, inc: Incident, on_event: Callable[[dict], Any] | Non
         lin.outcome = "delegation to remediator failed (fail closed)"
         return lin
 
-    # ── PHASE 2: remediate, one step at a time, stop at the first non-ALLOWED ──
-    done = []
+    # ── PHASE 2: remediate, one step at a time ─────────────────────────────
+    done, pending = [], []
     for s in all_steps:
         v = lin.verdict(gw.call(d2["token"], "remediator", s["mcp"], s["tool"], s["params"]),
                         rule=s.get("rule"))
         if v.decision == "HELD":
             v = _approval(gw, lin, inc, p2, d2, v)
+        if v.decision == "HELD":
+            pending.append(s["tool"])
+            continue
         if v.decision != "ALLOWED":
             lin.outcome = (f"stopped at {s['tool']}: {v.decision} [{v.source}]; "
-                           f"done before it: {done or 'nothing'}")
+                           f"done before it: {done or 'nothing'}; awaiting approval: {pending or 'nothing'}")
             return lin
         done.append(s["tool"])
-    lin.outcome = f"remediation complete: {done}"
+    lin.outcome = (f"remediation {'complete' if not pending else 'partial'}: done {done or 'nothing'}"
+                   f"; awaiting approval: {pending or 'nothing'}")
     return lin
 
 
@@ -179,6 +184,8 @@ def _approval(gw, lin, inc: Incident, plan: CommittedPlan, deleg: dict, held: Ve
     held.approval_id = did
     lin.add("approval", tool=held.tool, delegation_id=did, status="pending",
             wait_s=inc.approval_wait_s)
+    if inc.approval_wait_s <= 0:
+        return held
     deadline, status = time.time() + inc.approval_wait_s, "pending"
     while time.time() < deadline:
         try:

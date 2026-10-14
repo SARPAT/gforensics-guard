@@ -139,7 +139,7 @@ def _incident(**kw):
     return Incident("Investigate XID 79 on node-07", ["node-07"], use_llm=False, **kw)
 
 
-def test_orchestrator_chains_plans_and_stops_at_hold(fleet):
+def test_orchestrator_chains_plans_and_parks_hold(fleet):
     inject_scene(fleet, "xid79")
     gw = FakeGateway(fleet, {"drain_node": "HELD"})
     lin = run(gw, _incident(requester="sre@example.com"))
@@ -147,10 +147,18 @@ def test_orchestrator_chains_plans_and_stops_at_hold(fleet):
     assert p1.phase == "investigate" and [s["tool"] for s in p1.steps] == list(INVESTIGATION_READS)
     assert p2.parent_plan_hash == p1.plan_hash
     assert all(s["mcp"] == "gfg-ops" for s in p2.steps)
-    writes = [(a, t) for a, t, _ in gw.calls if a == "remediator"]
-    assert writes == [("remediator", "cordon_node"), ("remediator", "drain_node")]   # RMA never tried
-    assert "stopped at drain_node: HELD" in lin.outcome
+    writes = [t for a, t, _ in gw.calls if a == "remediator"]
+    assert writes == ["cordon_node", "drain_node", "open_rma_ticket"]   # HELD parks, rest still asked
+    assert "awaiting approval: ['drain_node']" in lin.outcome
     assert fleet.node("node-07").cordoned and not fleet.node("node-07").drained
+
+
+def test_orchestrator_stops_at_block(fleet):
+    inject_scene(fleet, "xid79")
+    gw = FakeGateway(fleet, {"drain_node": "BLOCKED"})
+    lin = run(gw, _incident())
+    assert [t for a, t, _ in gw.calls if a == "remediator"] == ["cordon_node", "drain_node"]
+    assert lin.outcome.startswith("stopped at drain_node: BLOCKED")
 
 
 def test_orchestrator_resumes_after_human_approval(fleet):
