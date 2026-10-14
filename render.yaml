@@ -20,3 +20,14 @@ services:
         value: enforce
       - key: GFG_ADMIN_TOKEN    # optional: guards /sim/reset and /sim/scene
         sync: false
+      # CP5: live runs from the web UI call ArmorIQ FROM this service (needs ARMORIQ_API_KEY above)
+      - key: ARMORIQ_MCP_GFG_TELEMETRY_AUTH_TYPE
+        value: bearer
+      - key: ARMORIQ_MCP_GFG_TELEMETRY_TOKEN    # same value as GFG_MCP_TOKEN
+        sync: false
+      - key: ARMORIQ_MCP_GFG_OPS_AUTH_TYPE
+        value: bearer
+      - key: ARMORIQ_MCP_GFG_OPS_TOKEN          # same value as GFG_MCP_TOKEN
+        sync: false
+      - key: GFG_REQUESTER_EMAIL   # on-call SRE (ArmorIQ user + approval requester); never shown in the UI
+        sync: false

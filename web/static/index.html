@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Gforensics Guard</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8553d'/%3E%3Cpath d='M16 6l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V9z' fill='none' stroke='white' stroke-width='2.4'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l7 2.6v5.2c0 4.4-3 7.9-7 9.6-4-1.7-7-5.2-7-9.6V5.6z"/><path d="M8.6 12.2l2.3 2.3 4.5-4.6"/></svg></div>
+  <div class="crumbs"><b>Gforensics Guard</b><span class="sep">/</span><span id="crumb">Incident console</span></div>
+  <span class="sandbox-pill" title="No real GPUs or customers: a simulated 16-server fleet. Every ArmorIQ verdict is real.">Simulated fleet · real ArmorIQ</span>
+  <nav><a href="/" class="on">Incident console</a><a href="/split" class="">Split screen</a></nav>
+</header>
+<main class="console">
+  <section>
+    <div class="card panel">
+      <div class="label">1 · Pick an incident</div>
+      <div id="scenes"></div>
+      <div class="controls">
+        <div>
+          <div class="label" style="margin-bottom:6px">2 · How to run it</div>
+          <div class="seg" id="mode">
+            <button data-mode="live">Live now</button><button data-mode="replay">Replay a recorded run</button>
+          </div>
+          <div class="hint" id="modeHint" style="margin-top:6px"></div>
+        </div>
+        <label class="toggle" id="compWrap" title="Worst case: the planner itself is compromised and writes the attacker's step INTO the plan ArmorIQ signs.">
+          <input type="checkbox" id="compromised"> <span>Compromised planner <span class="muted small">(plants a bad step in the signed plan)</span></span>
+        </label>
+        <button class="btn primary" id="go">▶ Run incident</button>
+        <div class="hint" id="err" style="color:var(--bad)"></div>
+      </div>
+    </div>
+    <div class="card panel" style="margin-top:16px">
+      <div class="label">How to read this</div>
+      <p class="small" style="margin:8px 0"><span class="badge ALLOWED">✓ Allowed by ArmorIQ</span></p>
+      <p class="small" style="margin:8px 0"><span class="badge HELD">⏸ Waiting for a human approver</span></p>
+      <p class="small" style="margin:8px 0"><span class="badge BLOCKED">✕ Blocked by ArmorIQ policy</span></p>
+      <p class="small" style="margin:8px 0"><span class="badge BLOCKED sdk">⛔ Stopped: not in the signed plan</span></p>
+      <p class="hint">Every badge is ArmorIQ's real answer to that call, never decided by this app. Hover dotted words for a plain-English meaning.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <div style="padding:14px 16px 0">
+        <div class="label">Objective</div>
+        <h2 id="objective" style="margin:4px 0 0;font-size:18px">Pick an incident and press Run.</h2>
+        <div id="banner" style="margin-top:10px"></div>
+      </div>
+      <div class="phases" id="phases">
+        <div class="phase" data-p="investigate"><div class="n">01</div><div class="t">Investigate</div><div class="s">read-only pass</div></div>
+        <div class="phase" data-p="expand"><div class="n">02</div><div class="t">Ask for more authority</div><div class="s">new signed plan</div></div>
+        <div class="phase" data-p="remediate"><div class="n">03</div><div class="t">Remediate</div><div class="s">each call checked</div></div>
+        <div class="phase" data-p="report"><div class="n">04</div><div class="t">Lineage report</div><div class="s">who allowed what</div></div>
+      </div>
+    </div>
+    <div class="card timeline" id="tl"><div class="tl-empty">The agent's steps will appear here as they happen.</div></div>
+    <div class="card outcome" id="outcome" hidden></div>
+  </section>
+
+  <section>
+    <div class="card fleet" id="fleet"></div>
+    <div class="card explain" id="explain">
+      <div class="label">What does this mean?</div>
+      <p>Click any step in the timeline to see it in plain words, plus the raw ArmorIQ response.</p>
+    </div>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let info, scene = "split_screen", mode = "replay", running = false;
+  GFG.fleetMap($("fleet"), null);
+
+  function select(e, d) {
+    $("explain").innerHTML = `<div class="label">What does this mean?</div><h4>${d.title}</h4><p>${d.explain || ""}</p>
+      ${d.approval && d.approval.delegation_id && info.live_available ? `<button class="btn" id="chk">Ask ArmorIQ for the approval status now</button><div id="chkout" class="hint" style="margin-top:6px"></div>` : ""}
+      <details><summary>Raw record</summary><pre>${GFG.esc(JSON.stringify(d.raw || e, null, 1))}</pre></details>`;
+    const b = document.getElementById("chk");
+    if (b) b.onclick = async () => {
+      b.disabled = true;
+      try { const r = await GFG.api(`/api/approval/${d.approval.delegation_id}`); $("chkout").innerHTML = `ArmorIQ says: <b>${GFG.esc(r.status)}</b>`; }
+      catch (x) { $("chkout").textContent = x.message; }
+      b.disabled = false;
+    };
+  }
+
+  function renderScenes() {
+    $("scenes").innerHTML = info.scenes.map((s) => {
+      const [t, d] = GFG.SCENE_TITLES[s.name] || [s.name, s.story];
+      return `<button class="scene ${s.name === scene ? "on" : ""}" data-s="${s.name}"><div class="t">${GFG.esc(t)}</div><div class="d">${GFG.esc(d)}</div></button>`;
+    }).join("");
+    $("scenes").querySelectorAll(".scene").forEach((b) => b.onclick = () => { scene = b.dataset.s; renderScenes(); renderMode(); });
+  }
+  function renderMode() {
+    const sc = info.scenes.find((s) => s.name === scene);
+    $("compWrap").style.display = sc && sc.has_compromised ? "" : "none";
+    if (!(sc && sc.has_compromised)) $("compromised").checked = false;
+    const live = $("mode").querySelector('[data-mode="live"]');
+    live.disabled = !info.live_available;
+    if (!info.live_available && mode === "live") mode = "replay";
+    $("mode").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.mode === mode));
+    const label = scene + ($("compromised").checked ? "-compromised" : "");
+    const rec = info.recorded.filter((r) => r.id.endsWith(label)).pop();
+    $("modeHint").innerHTML = mode === "live"
+      ? "Calls ArmorIQ right now. Takes about a minute; one live run at a time."
+      : (rec ? `Plays back a real run recorded on ${GFG.esc(rec.recorded_at)}. Every verdict in it came from ArmorIQ at that time.` : "No recording for this choice yet.")
+        + (info.live_available ? "" : "<br>Live runs are off on this server (no ArmorIQ key).");
+  }
+  $("mode").querySelectorAll("button").forEach((b) => b.onclick = () => { mode = b.dataset.mode; renderMode(); });
+  $("compromised").onchange = renderMode;
+
+  function setPhase(p, done) {
+    const order = ["investigate", "expand", "remediate", "report"];
+    document.querySelectorAll(".phase").forEach((el) => {
+      const i = order.indexOf(el.dataset.p), j = order.indexOf(p);
+      el.classList.toggle("done", done ? i <= j : i < j);
+      el.classList.toggle("on", !done && i === j);
+    });
+  }
+
+  $("go").onclick = async () => {
+    if (running) return;
+    $("err").textContent = "";
+    const comp = $("compromised").checked;
+    let id;
+    try { id = (await GFG.startRun({ scene, mode, compromised: comp, naive: false })).id; }
+    catch (x) { $("err").textContent = x.message; return; }
+    running = true; $("go").disabled = true; $("go").textContent = "Running…";
+    $("outcome").hidden = true;
+    const sc = info.scenes.find((s) => s.name === scene);
+    $("objective").textContent = sc.objective;
+    setPhase("investigate");
+    const tl = GFG.Timeline($("tl"), "governed", select), evs = [];
+    GFG.stream(id, {
+      meta: (m) => {
+        const r = m.run;
+        $("banner").innerHTML = r.mode === "live"
+          ? `<div class="banner live">● LIVE: every step below is ArmorIQ answering right now.</div>`
+          : `<div class="banner replay">⟲ REPLAY of a real run recorded ${GFG.esc(r.recorded.recorded_at)}. Verdicts are ArmorIQ's answers from that run.</div>`;
+        if (comp) $("banner").insertAdjacentHTML("beforeend", `<div class="banner naive" style="margin-top:6px">☠ Compromised planner ON: a harmful step will be written into the signed plan.</div>`);
+      },
+      event: (m) => {
+        const e = m.event;
+        if (e.kind === "plan" && e.phase === "remediate") setPhase("expand");
+        if (e.kind === "injection") setPhase("expand");
+        if (e.kind === "delegation" && e.agent === "remediator") setPhase("remediate");
+        evs.push(e); tl.add(e);
+      },
+      fleet: (m) => GFG.fleetMap($("fleet"), m.governed),
+      done: (m) => {
+        running = false; $("go").disabled = false; $("go").textContent = "▶ Run again";
+        setPhase("report", true);
+        $("outcome").hidden = false;
+        $("outcome").innerHTML = m.status === "error"
+          ? `<b>Run failed:</b> ${GFG.esc(m.error)} <span class="muted">(this is an app/network error, not an ArmorIQ verdict)</span>`
+          : `<div class="label">Outcome</div><div style="margin:6px 0;font-weight:600">${GFG.esc(GFG.plainOutcome(evs))}</div><div class="mono muted" style="margin-bottom:8px">${GFG.esc(m.outcome)}</div><a class="btn" href="/report/${id}">Open the lineage report →</a>`;
+      },
+      error: () => { running = false; $("go").disabled = false; $("go").textContent = "▶ Run incident"; },
+    });
+  };
+
+  GFG.api("/api/scenes").then((d) => {
+    info = d;
+    if (info.live_available) mode = "live";
+    const q = new URLSearchParams(location.search);
+    if (q.get("scene")) scene = q.get("scene");
+    renderScenes(); renderMode();
+  });
+})();
+</script>
+</body>
+</html>

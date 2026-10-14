@@ -30,6 +30,7 @@ import sim
 from sim import faults, telemetry
 from servers import fleet_ops, telemetry as telemetry_mcp
 from servers.auth import LAST_SEEN, RequireToken
+from web.routes import router as web_router, static_app
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
 
@@ -90,6 +91,8 @@ def sim_scene(scene: str, reset: bool = True, x_admin_token: str | None = Header
     return {"scene": scene, "injected": injected, "summary": telemetry.fleet_summary(f)}
 
 
+app.include_router(web_router)          # CP5 web UI + run API
+app.mount("/static", static_app)
 app.mount("/telemetry", RequireToken(both_transports(telemetry_mcp.server), MCP_TOKEN, MCP_AUTH_MODE, "telemetry"))
 app.mount("/ops", RequireToken(both_transports(fleet_ops.server), MCP_TOKEN, MCP_AUTH_MODE, "ops"))
 
