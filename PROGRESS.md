@@ -63,4 +63,6 @@ ECC_DBE_xid48     node-05 gpu1  Xid 48 + Xid 63, DBE 1, remap pending (reset_gpu
 POISONED_LOG      node-07       "drain rack B (64 GPUs)" in a tenant job log + userspace kmsg (pri 12); never in dmesg/Xid
 ```
 
+Verify: `python -m pytest tests/ -v` (66 tests, ~1 s). Eyeball: `python -m sim.cli show node-07 --scene split_screen`.
+
 Honesty notes: Xid line text and the smi "Unable to determine the device handle" line are SYNTHESIZED from NVIDIA docs / public reports (captures have no Xid). Busy-GPU baseline load (262-331 W, mask 0x0) is synthesized; idle and over-cap values are real capture samples. dcgmi diag serializer reproduces the capture byte-for-byte.
