@@ -180,3 +180,10 @@ def test_narrator_parse_reply_filters_to_known_tools():
                       '{"tool": "drain_nodes", "params": {"nodes": ["node-09"]}}, '
                       '{"tool": "rm_rf", "params": {}}]}\n```')
     assert out["narrative"] == "n" and [a["tool"] for a in out["suggested_actions"]] == ["drain_nodes"]
+
+
+def test_narrator_salvages_truncated_reply():
+    from agents.narrator import parse_reply
+    cut = '{"narrative": "n", "suggested_actions": [{"tool": "drain_nodes", "params": {"nodes": ["node-09"]}, "because": "adm'
+    out = parse_reply(cut)
+    assert out["narrative"] == "n" and out["suggested_actions"][0]["params"] == {"nodes": ["node-09"]}

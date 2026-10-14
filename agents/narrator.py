@@ -58,7 +58,7 @@ def narrate(evidence: dict, diagnosis: dict, timeout: float = 60.0) -> dict:
     try:
         r = httpx.post(f"{os.getenv('LLM_BASE_URL', DEFAULT_BASE).rstrip('/')}/chat/completions",
                        headers={"Authorization": f"Bearer {key}"}, timeout=timeout,
-                       json={"model": model, "temperature": 0.2, "max_tokens": 1200,
+                       json={"model": model, "temperature": 0.2, "max_tokens": 4000,
                              "messages": [{"role": "system", "content": SYSTEM},
                                           {"role": "user", "content": _evidence_digest(evidence, diagnosis)}]})
         r.raise_for_status()
@@ -71,13 +71,38 @@ def narrate(evidence: dict, diagnosis: dict, timeout: float = 60.0) -> dict:
 
 
 def parse_reply(text: str) -> dict:
-    """Pull the JSON object out of the reply (models wrap it in prose / <think> / fences)."""
+    """Pull the JSON object out of the reply (models wrap it in prose / <think> / fences).
+    If the object is cut off, still recover any complete {"tool": ..., "params": {...}} items."""
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.S)
-    m = re.search(r"\{.*\}", text, flags=re.S)
-    try:
-        obj = json.loads(m.group(0)) if m else {}
-    except ValueError:
-        obj = {}
-    acts = [a for a in obj.get("suggested_actions") or []
+    obj, dec = {}, json.JSONDecoder()
+    for i, ch in enumerate(text):
+        if ch != "{":
+            continue
+        try:
+            cand, _ = dec.raw_decode(text[i:])
+        except ValueError:
+            continue
+        if isinstance(cand, dict) and ("narrative" in cand or "suggested_actions" in cand):
+            obj = cand
+            break
+    acts = obj.get("suggested_actions")
+    if acts is None:   # truncated reply: salvage complete action objects
+        acts = []
+        for m in re.finditer(r'\{\s*"tool"', text):
+            try:
+                a, _ = dec.raw_decode(text[m.start():])
+                acts.append(a)
+            except ValueError:   # object cut off after its params: keep tool + params
+                t = re.match(r'\{\s*"tool"\s*:\s*"(\w+)"\s*,\s*"params"\s*:\s*', text[m.start():])
+                if t:
+                    try:
+                        prm, _ = dec.raw_decode(text[m.start() + t.end():])
+                        acts.append({"tool": t.group(1), "params": prm, "because": "(reply cut off)"})
+                    except ValueError:
+                        pass
+        m = re.search(r'"narrative"\s*:\s*"((?:[^"\\]|\\.)*)', text)
+        obj = {"narrative": json.loads(f'"{m.group(1)}"') if m else None}
+    acts = [a for a in acts or []
             if isinstance(a, dict) and a.get("tool") in OPS_TOOLS and isinstance(a.get("params"), dict)]
-    return {"narrative": obj.get("narrative") or text.strip()[:1500], "suggested_actions": acts}
+    return {"narrative": obj.get("narrative") or text.strip()[:1500], "suggested_actions": acts,
+            "raw_tail": text.strip()[-300:]}
