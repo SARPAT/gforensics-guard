@@ -3,6 +3,8 @@
 **One sentence:** reasoning (rule table + LLM) only *proposes*; ArmorIQ sits between every agent call and the MCP servers and
 *decides*; the MCP servers only *execute* on a simulated fleet.
 
+![Gforensics Guard architecture](architecture.svg)
+
 ## Components and request path
 
 ```

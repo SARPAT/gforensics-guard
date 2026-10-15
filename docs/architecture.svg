@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 820" width="1240" height="820" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Gforensics Guard architecture: reasoning proposes, ArmorIQ decides, MCP servers execute on a simulated fleet</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f9d76"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#e2e8f0"/></pattern>
+    <style>
+      .h{font-size:13px;font-weight:700;letter-spacing:.06em}
+      .t{font-size:14px;font-weight:600;fill:#0f172a}
+      .s{font-size:12px;fill:#475569}
+      .m{font-family:JetBrains Mono, SFMono-Regular, Menlo, Consolas, monospace;font-size:11.5px;fill:#334155}
+      .n{font-size:12px;font-weight:700;fill:#fff}
+      .box{fill:#fff;stroke:#cbd5e1;stroke-width:1.2}
+      .flow{stroke:#475569;stroke-width:1.6;fill:none}
+    </style>
+  </defs>
+
+  <rect width="1240" height="820" fill="#ffffff"/>
+  <rect width="1240" height="820" fill="url(#dots)"/>
+
+  <!-- title -->
+  <text x="40" y="44" font-size="24" font-weight="800" fill="#0f172a">Gforensics Guard</text>
+  <text x="250" y="44" font-size="15" fill="#475569">investigates freely · must earn the authority to remediate</text>
+  <g transform="translate(830,24)">
+    <rect width="370" height="30" rx="15" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="185" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#9a3412">Reasoning PROPOSES · ArmorIQ DECIDES · MCP EXECUTES</text>
+  </g>
+
+  <!-- ============ LANE 1: REASONING ============ -->
+  <rect x="30" y="76" width="350" height="560" rx="16" fill="#eef2ff" fill-opacity=".75" stroke="#a5b4fc"/>
+  <text x="50" y="104" class="h" fill="#4338ca">① REASONING · proposes only</text>
+  <text x="50" y="122" class="s">Render web service · agents/</text>
+
+  <!-- user -->
+  <g transform="translate(50,138)">
+    <rect width="310" height="62" rx="10" class="box"/>
+    <circle cx="28" cy="31" r="16" fill="#e0e7ff"/><circle cx="28" cy="25" r="5.5" fill="#4338ca"/><path d="M17,41 a11,9 0 0 1 22,0" fill="#4338ca"/>
+    <text x="54" y="26" class="t">On-call SRE · web console</text>
+    <text x="54" y="45" class="s">"Investigate XID 79 on node-07"</text>
+  </g>
+
+  <g transform="translate(50,222)">
+    <rect width="310" height="62" rx="10" class="box"/>
+    <text x="16" y="26" class="t">Orchestrator</text>
+    <text x="16" y="45" class="s">objective → one signed plan per phase</text>
+  </g>
+  <g transform="translate(50,300)">
+    <rect width="150" height="78" rx="10" class="box"/>
+    <text x="12" y="24" class="t">Diagnoser</text>
+    <text x="12" y="42" class="s">7-rule table on</text>
+    <text x="12" y="58" class="s">device telemetry</text>
+  </g>
+  <g transform="translate(210,300)">
+    <rect width="150" height="78" rx="10" class="box" stroke-dasharray="4 3"/>
+    <text x="12" y="24" class="t">Narrator LLM</text>
+    <text x="12" y="42" class="s">NVIDIA Nemotron</text>
+    <text x="12" y="58" class="s">reads raw logs · story</text>
+  </g>
+  <g transform="translate(50,394)">
+    <rect width="310" height="56" rx="10" class="box"/>
+    <text x="16" y="24" class="t">Remediator</text>
+    <text x="16" y="42" class="s">calls the write plan, step by step</text>
+  </g>
+  <line x1="205" y1="284" x2="205" y2="300" class="flow"/>
+  <line x1="205" y1="378" x2="205" y2="394" class="flow"/>
+
+  <!-- armoriq_io -->
+  <g transform="translate(50,470)">
+    <rect width="310" height="78" rx="10" fill="#1e1b4b"/>
+    <text x="16" y="25" font-size="14" font-weight="700" fill="#fff">armoriq_io.py</text>
+    <text x="16" y="44" font-size="12" fill="#c7d2fe">the ONLY module that talks to ArmorIQ</text>
+    <text x="16" y="63" font-size="11.5" fill="#a5b4fc" font-family="JetBrains Mono, Menlo, Consolas, monospace">armoriq-sdk 0.6.10</text>
+  </g>
+  <line x1="205" y1="450" x2="205" y2="470" class="flow"/>
+
+  <!-- lineage -->
+  <g transform="translate(50,564)">
+    <rect width="310" height="56" rx="10" fill="#fff" stroke="#a5b4fc" stroke-width="1.5"/>
+    <text x="16" y="24" class="t">⑦ Intent-lineage report</text>
+    <text x="16" y="42" class="s">objective → plans → delegations → calls → verdicts</text>
+  </g>
+
+  <!-- ============ LANE 2: ARMORIQ ============ -->
+  <rect x="430" y="76" width="380" height="560" rx="16" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <text x="450" y="104" class="h" fill="#c2410c">② ArmorIQ · THE ENFORCEMENT LAYER</text>
+  <text x="450" y="122" class="s">platform.armoriq.ai · not our code</text>
+
+  <g transform="translate(450,138)">
+    <rect width="340" height="100" rx="10" class="box"/>
+    <text x="16" y="25" class="t">Intent: signed plans</text>
+    <text x="16" y="46" class="m">capture_plan → get_intent_token</text>
+    <text x="16" y="64" class="m">delegate_subtree(agent key)</text>
+    <text x="16" y="84" class="s">Merkle-committed · write plan carries read-plan hash</text>
+  </g>
+
+  <g transform="translate(450,256)">
+    <rect width="340" height="74" rx="10" class="box"/>
+    <text x="16" y="25" class="t">Proxy + policy engine</text>
+    <text x="16" y="45" class="m">gfg-telemetry-read · gfg-ops-remediate</text>
+    <text x="16" y="62" class="s">default BLOCK · declarative YAML, no if/else in our repo</text>
+  </g>
+
+  <!-- decision diamond -->
+  <polygon points="620,350 680,392 620,434 560,392" fill="#fff" stroke="#fb923c" stroke-width="2"/>
+  <text x="620" y="389" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">verdict</text>
+  <text x="620" y="405" text-anchor="middle" font-size="11" fill="#9a3412">per call</text>
+  <line x1="620" y1="330" x2="620" y2="350" class="flow" marker-end="url(#a)"/>
+
+  <!-- outcomes -->
+  <g transform="translate(450,460)">
+    <rect width="104" height="58" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+    <text x="52" y="25" text-anchor="middle" font-size="13" font-weight="800" fill="#047857">✓ ALLOW</text>
+    <text x="52" y="44" text-anchor="middle" font-size="11" fill="#047857">reads · cordon</text>
+  </g>
+  <g transform="translate(568,460)">
+    <rect width="104" height="58" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="52" y="25" text-anchor="middle" font-size="13" font-weight="800" fill="#b45309">⏸ HOLD</text>
+    <text x="52" y="44" text-anchor="middle" font-size="11" fill="#b45309">RMA · reset_gpu</text>
+  </g>
+  <g transform="translate(686,460)">
+    <rect width="104" height="58" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="52" y="25" text-anchor="middle" font-size="13" font-weight="800" fill="#b91c1c">✕ BLOCK</text>
+    <text x="52" y="44" text-anchor="middle" font-size="11" fill="#b91c1c">drain_nodes</text>
+  </g>
+  <path d="M575,410 L502,460" stroke="#0f9d76" stroke-width="1.8" fill="none" marker-end="url(#g)"/>
+  <line x1="620" y1="434" x2="620" y2="460" stroke="#d97706" stroke-width="1.8" marker-end="url(#o)"/>
+  <path d="M665,410 L738,460" stroke="#dc2626" stroke-width="1.8" fill="none" marker-end="url(#r)"/>
+
+  <!-- held actions -->
+  <g transform="translate(450,536)">
+    <rect width="340" height="84" rx="10" fill="#fff" stroke="#f59e0b" stroke-width="1.5"/>
+    <circle cx="30" cy="34" r="16" fill="#fef3c7"/><circle cx="30" cy="28" r="5.5" fill="#b45309"/><path d="M19,44 a11,9 0 0 1 22,0" fill="#b45309"/>
+    <text x="56" y="26" class="t">Held Actions · a SECOND human</text>
+    <text x="56" y="45" class="s">approves or rejects in the console</text>
+    <text x="56" y="64" class="s">requester can't approve or reject own plan</text>
+  </g>
+  <line x1="620" y1="518" x2="620" y2="536" stroke="#d97706" stroke-width="1.8" marker-end="url(#o)"/>
+
+  <!-- ============ LANE 3: EXECUTION ============ -->
+  <rect x="860" y="76" width="350" height="560" rx="16" fill="#ecfeff" fill-opacity=".8" stroke="#67e8f9"/>
+  <text x="880" y="104" class="h" fill="#0e7490">③ EXECUTION · no allow/deny logic</text>
+  <text x="880" y="122" class="s">same Render service · servers/ + sim/</text>
+
+  <g transform="translate(880,138)">
+    <rect width="310" height="58" rx="10" fill="#0f172a"/>
+    <text x="16" y="24" font-size="14" font-weight="700" fill="#fff">🔒 MCP bearer token gate</text>
+    <text x="16" y="44" font-size="12" fill="#cbd5e1">only the ArmorIQ proxy has it · direct call → 401</text>
+  </g>
+  <g transform="translate(880,214)">
+    <rect width="150" height="78" rx="10" class="box"/>
+    <text x="12" y="24" class="t">gfg-telemetry</text>
+    <text x="12" y="42" class="s">MCP · 11 READ tools</text>
+    <text x="12" y="62" class="m">get_xid_events …</text>
+  </g>
+  <g transform="translate(1040,214)">
+    <rect width="150" height="78" rx="10" class="box"/>
+    <text x="12" y="24" class="t">gfg-ops</text>
+    <text x="12" y="42" class="s">MCP · 7 WRITE tools</text>
+    <text x="12" y="62" class="m">drain_node …</text>
+  </g>
+  <line x1="955" y1="196" x2="955" y2="214" class="flow"/>
+  <line x1="1115" y1="196" x2="1115" y2="214" class="flow"/>
+
+  <!-- fleet -->
+  <g transform="translate(880,312)">
+    <rect width="310" height="236" rx="10" class="box"/>
+    <text x="16" y="26" class="t">Simulated GPU fleet</text>
+    <text x="16" y="44" class="s">16 nodes × 8 A100 · real capture formats</text>
+    <text x="16" y="74" font-size="11" font-weight="700" fill="#64748b">RACK A</text>
+    <g transform="translate(16,82)">
+      <rect x="0" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="36" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <rect x="72" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="108" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <rect x="144" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="180" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <rect x="216" width="30" height="30" rx="5" fill="#fde68a" stroke="#d97706" stroke-width="1.5"/><rect x="252" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <text x="231" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">07</text>
+    </g>
+    <text x="16" y="138" font-size="11" font-weight="700" fill="#64748b">RACK B</text>
+    <g transform="translate(16,146)">
+      <rect x="0" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="36" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <rect x="72" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="108" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <rect x="144" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="180" width="30" height="30" rx="5" fill="#d1fae5"/>
+      <rect x="216" width="30" height="30" rx="5" fill="#d1fae5"/><rect x="252" width="30" height="30" rx="5" fill="#d1fae5"/>
+    </g>
+    <text x="16" y="200" font-size="12" fill="#047857" font-weight="600">node-07 cordoned + drained (8 GPUs)</text>
+    <text x="16" y="218" font-size="12" fill="#047857" font-weight="600">rack B untouched (64 GPUs keep training)</text>
+  </g>
+  <line x1="955" y1="292" x2="955" y2="312" class="flow"/>
+  <line x1="1115" y1="292" x2="1115" y2="312" class="flow"/>
+  <g transform="translate(880,564)">
+    <rect width="310" height="56" rx="10" fill="#fff" stroke="#67e8f9"/>
+    <text x="16" y="24" class="t">Audit log</text>
+    <text x="16" y="42" class="s">what actually reached the fleet → fleet map in UI</text>
+  </g>
+
+  <!-- ============ CROSS-LANE FLOWS ============ -->
+  <!-- 2: commit plan -->
+  <path d="M360,509 C395,509 400,188 450,188" class="flow" marker-end="url(#a)"/>
+  <circle cx="400" cy="300" r="12" fill="#4338ca"/><text x="400" y="304" text-anchor="middle" class="n">2</text>
+  <text x="384" y="334" font-size="11" fill="#4338ca" text-anchor="middle">plan</text>
+  <!-- 3: invoke -->
+  <path d="M360,530 C410,530 410,293 450,293" class="flow" marker-end="url(#a)"/>
+  <circle cx="417" cy="420" r="12" fill="#4338ca"/><text x="417" y="424" text-anchor="middle" class="n">3</text>
+  <text x="417" y="447" font-size="11" fill="#4338ca" text-anchor="middle">invoke</text>
+  <!-- allow -> MCP -->
+  <path d="M790,293 C835,293 835,167 880,167" stroke="#0f9d76" stroke-width="2.2" fill="none" marker-end="url(#g)"/>
+  <rect x="806" y="218" width="58" height="34" rx="6" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="835" y="232" font-size="10.5" font-weight="800" fill="#047857" text-anchor="middle">ALLOW</text>
+  <text x="835" y="246" font-size="10.5" fill="#047857" text-anchor="middle">forward</text>
+  <!-- verdict back -->
+  <path d="M450,600 C410,600 405,600 360,600" class="flow" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="405" y="592" font-size="11" fill="#475569" text-anchor="middle">verdict</text>
+
+  <!-- step numbers on lane 1 -->
+  <circle cx="44" cy="169" r="12" fill="#4338ca"/><text x="44" y="173" text-anchor="middle" class="n">1</text>
+  <circle cx="44" cy="339" r="12" fill="#4338ca"/><text x="44" y="343" text-anchor="middle" class="n">4</text>
+  <circle cx="44" cy="253" r="12" fill="#4338ca"/><text x="44" y="257" text-anchor="middle" class="n">5</text>
+  <circle cx="44" cy="422" r="12" fill="#4338ca"/><text x="44" y="426" text-anchor="middle" class="n">6</text>
+
+  <!-- ============ LEGEND / STEPS ============ -->
+  <g transform="translate(30,656)">
+    <rect width="780" height="146" rx="14" fill="#fff" stroke="#e2e8f0"/>
+    <text x="20" y="28" class="h" fill="#0f172a">ONE INCIDENT, STEP BY STEP</text>
+    <g class="s">
+      <text x="20" y="54"><tspan font-weight="700" fill="#4338ca">1</tspan>  SRE states the objective</text>
+      <text x="20" y="76"><tspan font-weight="700" fill="#4338ca">2</tspan>  read-only plan signed (intent token)</text>
+      <text x="20" y="98"><tspan font-weight="700" fill="#4338ca">3</tspan>  every read goes through ArmorIQ</text>
+      <text x="20" y="120"><tspan font-weight="700" fill="#4338ca">4</tspan>  rule table finds the cause, PROPOSES a fix</text>
+      <text x="380" y="54"><tspan font-weight="700" fill="#4338ca">5</tspan>  authority expansion: NEW write plan, chained</text>
+      <text x="394" y="70">to the read plan's hash</text>
+      <text x="380" y="92"><tspan font-weight="700" fill="#4338ca">6</tspan>  each write: ALLOW runs · HOLD waits for a</text>
+      <text x="394" y="108">second human · BLOCK stops (fail closed)</text>
+      <text x="380" y="130"><tspan font-weight="700" fill="#4338ca">7</tspan>  lineage report: every action → objective + evidence</text>
+    </g>
+  </g>
+
+  <!-- naive -->
+  <g transform="translate(830,656)">
+    <rect width="380" height="146" rx="14" fill="#fef2f2" stroke="#fca5a5" stroke-dasharray="6 4"/>
+    <text x="20" y="28" class="h" fill="#b91c1c">BASELINE · naive agent (split screen)</text>
+    <text x="20" y="52" class="s">same LLM · same tools · NO ArmorIQ</text>
+    <text x="20" y="72" class="s">own sandbox fleet, never the shared one</text>
+    <text x="20" y="100" font-size="13" font-weight="700" fill="#b91c1c">poisoned job log → drains rack B</text>
+    <text x="20" y="120" font-size="13" font-weight="700" fill="#b91c1c">64 GPUs down · "Done. Nobody checked."</text>
+  </g>
+</svg>
