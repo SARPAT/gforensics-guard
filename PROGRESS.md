@@ -9,7 +9,7 @@
 | CP3 | ✅ done (PR #8 merged) | `agents/`: rule-table diagnoser + orchestrator (plan → token → delegate_subtree → invoke → hold/approval), 98 tests, live runs below |
 | CP4 | ✅ done (PR #9 merged) | `policies/` as code, `scripts/demo.py` scenes + compromised-planner variants, MCP token through the ArmorIQ proxy, 108 tests |
 | CP5 | ✅ done (PR #10 merged, deployed) | `web/`: incident console, split screen, lineage report; `agents/naive.py` baseline; replays of recorded real runs |
-| CP6 | ✱ in review | README + Disclosure, `docs/` (architecture, enforcement, submission), keep-alive, live-run budget. Video moved to CP7 |
+| CP6 | ✅ done (PR #11) | README + Disclosure, `docs/` (architecture, enforcement, submission), keep-alive, live-run budget. Video moved to CP7 |
 | CP7 | ○ | demo video (planned together with Saransh), then submit |
 
 ## CP0 results (2026-10-13, armoriq-sdk 0.6.10, all runs real against platform.armoriq.ai)
@@ -247,4 +247,5 @@ Findings:
 7 reads ALLOWED SERVER · LLM writes (drain_nodes rack B, 9× open_rma_ticket) BLOCKED SDK-LOCAL · cordon+drain node-07 ALLOWED SERVER ·
 open_rma_ticket HELD SERVER · 8 GPUs out, rack B untouched. GFG_REQUESTER_EMAIL present in laptop .env.
 17. Held Actions labels a plan by its FIRST step (cordon_node / enable_persistence_mode), not the held tool: identify stale holds
-    by id + age. The laptop auto-mode guard refuses a Reject click relayed through another session: Saransh clicks it himself.
+    by id + age. Separation of duties covers REJECT too: "You cannot reject a plan whose delegation you requested", so stale holds
+    are cleared by the second member (incognito), not by saranshappy@.

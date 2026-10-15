@@ -73,6 +73,7 @@ rma_trap (diag Fail = config)       enable_persistence_mode            ALLOWED  
 xid79 (real hardware fault)         cordon, drain node-07              ALLOWED    SERVER
                                     open_rma_ticket                    HELD       SERVER  → second member approved in console
                                     self-approval by the requester     REFUSED    SERVER  (separation of duties)
+                                    self-REJECT by the requester       REFUSED    SERVER  (same rule: another member decides)
 MCP bypass                          direct POST /ops/mcp               HTTP 401   our MCP server (token only the proxy injects)
 ```
 
