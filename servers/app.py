@@ -20,6 +20,7 @@ import contextlib
 import hmac
 import logging
 import os
+import time
 from dataclasses import asdict
 
 from fastapi import FastAPI, Header, HTTPException
@@ -37,6 +38,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s
 MCP_TOKEN = os.getenv("GFG_MCP_TOKEN") or None
 MCP_AUTH_MODE = os.getenv("GFG_MCP_AUTH_MODE", "enforce")
 ADMIN_TOKEN = os.getenv("GFG_ADMIN_TOKEN") or None
+STARTED = time.time()
 
 
 def both_transports(server: FastMCP) -> Starlette:
@@ -58,7 +60,11 @@ app = FastAPI(title="gforensics-guard MCP servers (CP2)", lifespan=lifespan)
 def health() -> dict:
     return {"ok": True, "servers": [telemetry_mcp.NAME, fleet_ops.NAME],
             "mcp_auth": MCP_TOKEN is not None, "mcp_auth_mode": MCP_AUTH_MODE if MCP_TOKEN else "off",
-            "mcp_auth_last_seen": LAST_SEEN, "simulated": True}
+            "mcp_auth_last_seen": LAST_SEEN, "simulated": True,
+            # CP6: lets the keep-alive and judges see what is deployed (never any secret)
+            "commit": (os.getenv("RENDER_GIT_COMMIT") or "local")[:7],
+            "live_runs": bool(os.getenv("ARMORIQ_API_KEY")),
+            "uptime_s": round(time.time() - STARTED)}
 
 
 def _admin(token: str | None) -> None:
