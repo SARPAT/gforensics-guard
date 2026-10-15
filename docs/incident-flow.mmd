@@ -1,0 +1,42 @@
+flowchart TB
+  SRE["On-call SRE · Investigate XID 79 on node-07"] --> PLAN1
+
+  subgraph P1["PHASE 1 · INVESTIGATE"]
+    PLAN1["1 · Commit READ plan<br/>capture_plan + get_intent_token"] --> READS["2 · Diagnoser reads telemetry<br/>Xid · diag · DCGM · smi · NVLink"]
+    READS --> RULES["3 · Rule table: root cause + evidence"]
+    RULES --> FIX{"Fix<br/>needed?"}
+  end
+  FIX -- "Yes · PROPOSES steps" --> PLAN2
+  FIX -- "No" --> CLOSE
+
+  subgraph EXP["AUTHORITY EXPANSION"]
+    PLAN2["4 · Commit WRITE plan<br/>new signed plan, chained to read-plan hash"]
+  end
+
+  subgraph P2["PHASE 2 · REMEDIATE"]
+    STEP["5 · Remediator invokes next step"] --> VERDICT{"ArmorIQ<br/>verdict"}
+    VERDICT -- "ALLOW" --> RUN["Runs on simulated fleet<br/>cordon · drain_node · persistence"]
+    VERDICT -- "HOLD" --> HELD["Held Actions: a SECOND human decides<br/>open_rma_ticket · reset_gpu"]
+    VERDICT -- "BLOCK" --> STOP["Stopped, fail closed<br/>drain_nodes · rack B untouched"]
+    RUN --> MORE{"More<br/>steps?"}
+    HELD --> MORE
+    MORE -- "Yes" --> STEP
+  end
+  PLAN2 --> STEP
+  MORE -- "No" --> CLOSE
+  STOP --> CLOSE
+
+  CLOSE["6 · Intent-lineage report<br/>objective → plans → delegations → calls → verdicts"]
+
+  LLM["Narrator LLM reads raw logs<br/>incl. the poisoned job log"] -. "its suggested writes → stopped<br/>(not in the read-only plan)" .-> READS
+
+  classDef allow fill:#ecfdf5,stroke:#10b981,color:#065f46
+  classDef hold fill:#fffbeb,stroke:#f59e0b,color:#92400e
+  classDef block fill:#fef2f2,stroke:#ef4444,color:#991b1b
+  classDef aiq fill:#fff7ed,stroke:#f97316,color:#9a3412,stroke-width:2px
+  classDef llm fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:4 3
+  class RUN allow
+  class HELD hold
+  class STOP block
+  class VERDICT aiq
+  class LLM llm
