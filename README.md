@@ -11,6 +11,8 @@ Built for the **ArmorIQ Flow State Hackathon** (Oct 10–17, 2026). Everything r
 
 ---
 
+![Gforensics Guard architecture](docs/architecture.svg)
+
 ## The problem
 
 GPU fleets fail all the time: Xid driver errors, ECC memory faults, NVLink link errors, throttling. Teams want agents that fix
