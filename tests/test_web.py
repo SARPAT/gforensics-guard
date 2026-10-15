@@ -72,3 +72,34 @@ def test_recordings_have_no_emails_or_tokens():
     for p in REC.glob("*.json"):
         s = p.read_text()
         assert "gmail" not in s and '"token"' not in s, p.name
+
+
+def test_live_budget_cooldown_and_cap(client, monkeypatch):
+    """CP6: the public site rations live runs (our app's budget, not an ArmorIQ verdict)."""
+    m = runs.RunManager()
+    monkeypatch.setattr(runs, "LIVE_COOLDOWN_S", 60)
+    monkeypatch.setattr(runs, "LIVE_DAILY_CAP", 2)
+    m._spend_live_budget()
+    with pytest.raises(runs.BudgetError, match="try again"):
+        m._spend_live_budget()
+    m.live_starts = [time.time() - 3600, time.time() - 1800]
+    with pytest.raises(runs.BudgetError, match="used up"):
+        m._spend_live_budget()
+    m.live_starts = [time.time() - 90000]           # older than 24 h: forgotten
+    m._spend_live_budget()
+    assert m.live_budget()["used_24h"] == 1
+
+
+def test_budget_refusal_releases_live_lock(monkeypatch):
+    monkeypatch.setenv("ARMORIQ_API_KEY", "x")
+    m = runs.RunManager()
+    m.live_starts = [time.time()]
+    with pytest.raises(runs.BudgetError):
+        m.start("xid79", "live")
+    assert m.live_lock.acquire(blocking=False)     # not left locked
+
+
+def test_health_reports_deploy_without_secrets(client):
+    h = client.get("/health").json()
+    assert h["ok"] and "commit" in h and h["live_runs"] is False
+    assert "token" not in json.dumps({k: v for k, v in h.items() if k != "mcp_auth_last_seen"}).lower()

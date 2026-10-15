@@ -33,6 +33,11 @@ WRITE_TOOLS = ("cordon_node", "uncordon_node", "drain_node", "drain_nodes", "res
                "enable_persistence_mode", "open_rma_ticket")
 REPLAY_MAX_GAP_S = 1.2        # replays keep the real order, but compress long LLM waits
 KEEP_RUNS = 30
+# CP6: the public site stays up for judging (Oct 17-21). Every live run spends real ArmorIQ calls,
+# LLM tokens and may file a held approval request, so live runs are budgeted. This limits how
+# often OUR web app starts a run; it never decides what an agent may do (ArmorIQ does that).
+LIVE_COOLDOWN_S = int(os.getenv("GFG_LIVE_COOLDOWN_S", "45"))
+LIVE_DAILY_CAP = int(os.getenv("GFG_LIVE_DAILY_CAP", "60"))
 
 
 def scrub(obj: Any) -> Any:
@@ -48,6 +53,10 @@ def scrub(obj: Any) -> Any:
 
 def live_available() -> bool:
     return bool(os.getenv("ARMORIQ_API_KEY"))
+
+
+class BudgetError(RuntimeError):
+    """Live run refused by the web app's own budget (cooldown / daily cap), not by ArmorIQ."""
 
 
 @dataclass
@@ -100,6 +109,7 @@ class RunManager:
     def __init__(self):
         self.runs: dict[str, Run] = {}
         self.live_lock = threading.Lock()     # one live run at a time: the governed fleet is shared
+        self.live_starts: list[float] = []    # start times of live runs in the last 24 h
 
     # ── public API ─────────────────────────────────────────────────────────
     def start(self, scene: str, mode: str, compromised: bool = False, with_naive: bool = True,
@@ -112,6 +122,11 @@ class RunManager:
                 raise PermissionError("live runs need ARMORIQ_API_KEY on the server; use a replay")
             if not self.live_lock.acquire(blocking=False):
                 raise RuntimeError("another live run is in progress; try again when it finishes")
+            try:
+                self._spend_live_budget()
+            except BudgetError:
+                self.live_lock.release()
+                raise
         rec = None
         if mode == "replay":
             rec = self._pick_recording(scene, compromised, recorded_id)
@@ -126,6 +141,21 @@ class RunManager:
         else:
             run.naive_done = True
         return run
+
+    def live_budget(self) -> dict:
+        now = time.time()
+        self.live_starts = [t for t in self.live_starts if now - t < 86400]
+        wait = LIVE_COOLDOWN_S - (now - self.live_starts[-1]) if self.live_starts else 0
+        return {"cooldown_s": max(0, round(wait)), "used_24h": len(self.live_starts),
+                "cap_24h": LIVE_DAILY_CAP}
+
+    def _spend_live_budget(self) -> None:
+        b = self.live_budget()
+        if b["used_24h"] >= LIVE_DAILY_CAP:
+            raise BudgetError("the live-run budget for today is used up; please watch a recorded real run (Replay)")
+        if b["cooldown_s"] > 0:
+            raise BudgetError(f"live runs are spaced out; try again in {b['cooldown_s']} s, or watch a Replay now")
+        self.live_starts.append(time.time())
 
     def get(self, run_id: str) -> Run | None:
         return self.runs.get(run_id)

@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from web.runs import MANAGER, live_available, recorded_runs, scrub
+from web.runs import MANAGER, BudgetError, live_available, recorded_runs, scrub
 
 STATIC = pathlib.Path(__file__).parent / "static"
 router = APIRouter()
@@ -56,7 +56,7 @@ def report(run_id: str):
 def scenes() -> dict:
     from agents.scenes import DEMO_ORDER, SCENES
     order = DEMO_ORDER + [s for s in SCENES if s not in DEMO_ORDER]
-    return {"live_available": live_available(),
+    return {"live_available": live_available(), "live_budget": MANAGER.live_budget(),
             "llm_available": bool(os.getenv("LLM_API_KEY")),
             "scenes": [{"name": s, "objective": SCENES[s].objective, "nodes": SCENES[s].nodes,
                         "story": SCENES[s].story, "has_compromised": bool(SCENES[s].injected)}
@@ -74,6 +74,8 @@ def start_run(req: RunRequest) -> dict:
         raise HTTPException(404, str(e)) from None
     except PermissionError as e:
         raise HTTPException(403, str(e)) from None
+    except BudgetError as e:
+        raise HTTPException(429, str(e)) from None
     except RuntimeError as e:
         raise HTTPException(409, str(e)) from None
     return {"id": run.id}

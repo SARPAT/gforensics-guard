@@ -1,0 +1,31 @@
+# CP6: keep the free Render service warm for the judging window (live demo must work Oct 17-21).
+# Render's free tier sleeps after ~15 min without traffic (cold start ~30-50 s).
+# GitHub may start scheduled runs late, so each run pings /health every 4 min for ~12 min:
+# runs overlap and a late start still leaves no 15-minute gap. Reads /health only; no secrets.
+name: keep-alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      URL: https://gforensics-guard.onrender.com/health
+    steps:
+      - name: Ping /health
+        run: |
+          # Stop after the judging window so the free instance hours aren't spent for nothing.
+          if [ "$(date -u +%Y%m%d)" -gt 20261022 ]; then echo "judging window over, not pinging"; exit 0; fi
+          for i in 1 2 3 4; do
+            code=$(curl -s -o body.json -w '%{http_code}' --max-time 90 "$URL" || echo 000)
+            echo "$(date -u +%H:%M:%SZ) HTTP $code $(head -c 200 body.json 2>/dev/null)"
+            if [ "$i" -lt 4 ]; then sleep 240; fi
+          done

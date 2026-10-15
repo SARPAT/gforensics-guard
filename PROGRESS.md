@@ -8,7 +8,9 @@
 | CP2 | ✅ done (PR #4 merged, live on Render) | `servers/`: gfg-telemetry (11 read tools) + gfg-ops (7 write tools), one FastAPI app, 82 tests |
 | CP3 | ✅ done (PR #8 merged) | `agents/`: rule-table diagnoser + orchestrator (plan → token → delegate_subtree → invoke → hold/approval), 98 tests, live runs below |
 | CP4 | ✅ done (PR #9 merged) | `policies/` as code, `scripts/demo.py` scenes + compromised-planner variants, MCP token through the ArmorIQ proxy, 108 tests |
-| CP5 | ✅ built (PR pending) | `web/`: incident console, split screen, lineage report; `agents/naive.py` baseline; replays of recorded real runs |
+| CP5 | ✅ done (PR #10 merged, deployed) | `web/`: incident console, split screen, lineage report; `agents/naive.py` baseline; replays of recorded real runs |
+| CP6 | ✱ in review | README + Disclosure, `docs/` (architecture, enforcement, submission), keep-alive, live-run budget. Video moved to CP7 |
+| CP7 | ○ | demo video (planned together with Saransh), then submit |
 
 ## CP0 results (2026-10-13, armoriq-sdk 0.6.10, all runs real against platform.armoriq.ai)
 
@@ -221,3 +223,21 @@ noise. The xid79 recording ends when a second member approved the held RMA in th
 Verify offline: `python -m pytest tests/ -q` (118). Render env for live runs: ARMORIQ_API_KEY, LLM_API_KEY,
 ARMORIQ_MCP_GFG_{TELEMETRY,OPS}_TOKEN (= GFG_MCP_TOKEN), GFG_REQUESTER_EMAIL. Without the key the UI offers replays only.
 Laptop test against the deployed fleet: `GFG_FLEET_URL=https://gforensics-guard.onrender.com uvicorn servers.app:app --port 8765`.
+
+## CP6 (2026-10-15) — submission-ready repo + deploy hardening (video moved to CP7)
+
+```
+README.md                  what it does, live URL, scenes, run locally, repo map, Disclosure
+docs/architecture.md       ASCII + Mermaid diagram; reasoning (proposes) | ArmorIQ (decides) | MCP + sim (executes)
+docs/enforcement.md        intent → policy → enforcement, our policies, verdict matrix, two enforcement points, known limits
+docs/SUBMISSION.md         checklist, form answers, post draft (deadline Oct 17 18:29 UTC)
+.github/workflows/keep-alive.yml   cron */10, pings /health every 4 min for ~12 min (late cron starts still leave no
+                           15-min gap); stops itself after 2026-10-22
+web/runs.py                live-run budget: GFG_LIVE_COOLDOWN_S (45) + GFG_LIVE_DAILY_CAP (60) → HTTP 429 "watch a Replay";
+                           our app's rationing of ArmorIQ/LLM spend, never an allow/block of agent actions
+servers/app.py             /health adds commit, live_runs, uptime_s (no secrets)
+```
+
+Findings:
+16. Render free tier = 750 instance-hours/month per workspace; one always-warm service ≈ 744 h in October, so keep-alive
+    must stay the only always-on service and stops after the judging window.
