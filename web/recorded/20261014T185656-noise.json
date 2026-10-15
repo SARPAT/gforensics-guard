@@ -1,0 +1,519 @@
+{
+ "objective": "Alerts on node-11 (NVLink Xid 74) and node-02 (power over cap): investigate",
+ "started": 1791984397.0766814,
+ "outcome": "no write authority requested: node-11=TRANSIENT, node-02=NOT_MEASURED",
+ "events": [
+  {
+   "kind": "objective",
+   "t": 0.0,
+   "text": "Alerts on node-11 (NVLink Xid 74) and node-02 (power over cap): investigate",
+   "nodes": [
+    "node-11",
+    "node-02"
+   ],
+   "requester": "[email hidden]"
+  },
+  {
+   "kind": "plan",
+   "t": 6.43,
+   "phase": "investigate",
+   "goal": "INVESTIGATE: Alerts on node-11 (NVLink Xid 74) and node-02 (power over cap): investigate",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "plan_id": "dfd0874b-c49b-4f16-a98c-782ab2389c47",
+   "intent_reference": "018cd9661ae74deeb3f1cf8874b87092",
+   "parent_plan_hash": null,
+   "allowed_tools": [],
+   "steps": [
+    {
+     "tool": "get_xid_events",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    },
+    {
+     "tool": "get_diag_result",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    },
+    {
+     "tool": "get_dcgm_metrics",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    },
+    {
+     "tool": "get_smi_query",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    },
+    {
+     "tool": "get_nvlink_errors",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    },
+    {
+     "tool": "get_node_jobs",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    },
+    {
+     "tool": "get_kmsg",
+     "mcp": "gfg-telemetry",
+     "params": {
+      "node": "node-11"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "delegation",
+   "t": 7.04,
+   "ok": true,
+   "agent": "diagnoser",
+   "agent_pubkey": "f3763cca75a59efa07bcfd96c970b3c107b3430666dad1596902f5d50b5189b1",
+   "subtree_path": "/steps",
+   "trust_id": "8b9dd004-b03b-4f34-9d50-8a7a7372034a",
+   "subtree_root": "35b67b6b36eb36c85ee30c4680008be989e66e6f89729aaa7b03539c357586e4",
+   "parent_plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5"
+  },
+  {
+   "kind": "call",
+   "t": 8.18,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_xid_events",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": [
+    {
+     "time": "Wed Oct 14 10:58:35 2026",
+     "pci": "0000:90:00",
+     "xid": 74,
+     "detail": "pid='<unknown>', name=<unknown>, NVLink: Link 3: link error detected; link recovery initiated (0x10000, 0x0, 0x0)",
+     "raw": "[Wed Oct 14 10:58:35 2026] NVRM: Xid (PCI:0000:90:00): 74, pid='<unknown>', name=<unknown>, NVLink: Link 3: link error detected; link recovery initiated (0x10000, 0x0, 0x0)",
+     "node": "node-11",
+     "gpu": 5
+    }
+   ],
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984404.11945
+  },
+  {
+   "kind": "call",
+   "t": 10.01,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_diag_result",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "{\n\t\"DCGM Diagnostic\" : \n\t{\n\t\t\"test_categories\" : \n\t\t[\n\t\t\t{\n\t\t\t\t\"category\" : \"Deployment\",\n\t\t\t\t\"tests\" : \n\t\t\t\t[\n\t\t\t\t\t{\n\t\t\t\t\t\t\"name\" : \"software\",\n\t\t\t\t\t\t\"results\" : \n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\"entity_group\" : \"GPU\",\n\t\t\t\t\t\t\t\t\"entity_group_id\" : 1,\n\t\t\t\t\t\t\t\t\"entity_id\" : 0,\n\t\t\t\t\t\t\t\t\"status\" : \"Pass\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\"entity_group\" : \"GPU\",\n\t\t\t\t\t\t\t\t\"entity_group_id\" : 1,\n\t\t\t\t\t\t\t\t\"entity_id\" : 1... (2322 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984405.2521758
+  },
+  {
+   "kind": "call",
+   "t": 10.68,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_dcgm_metrics",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "# HELP DCGM_FI_DEV_SM_CLOCK SM clock frequency (in MHz).\n# TYPE DCGM_FI_DEV_SM_CLOCK gauge\nDCGM_FI_DEV_SM_CLOCK{gpu=\"0\",UUID=\"GPU-6d32a901-faf2-4ac0-a923-22d35364e64d\",pci_bus_id=\"00000000:07:00.0\",device=\"nvidia0\",modelName=\"NVIDIA A100-SXM4-40GB\",Hostname=\"1097538ae1c1\"} 1410\nDCGM_FI_DEV_SM_CLOCK{gpu=\"1\",UUID=\"GPU-9fe5e399-43cf-4adf-9279-688cfce205cd\",pci_bus_id=\"00000000:0F:00.0\",device=\"nvidia... (54018 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984407.0903192
+  },
+  {
+   "kind": "call",
+   "t": 12.22,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_smi_query",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "\n==============NVSMI LOG==============\n\nTimestamp                                 : Wed Oct 14 10:58:38 2026\nDriver Version                            : 570.148.08\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 8\nGPU 00000000:07:00.0\n    Product Name                          : NVIDIA A100-SXM4-40GB\n    Product Brand                         : NVIDIA\n  ... (85030 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984407.7600067
+  },
+  {
+   "kind": "call",
+   "t": 12.87,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_nvlink_errors",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": {
+    "text": "--- GPU 0\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 1\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 2\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 3\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 4\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 5\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=14 CRC_DATA=0 REPLAY=3 RECOVERY=1\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 6\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 7\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n",
+    "links": [
+     {
+      "gpu": 5,
+      "link": 3,
+      "up": true,
+      "link_recovery_successful": 1,
+      "link_recovery_failed": 0
+     }
+    ]
+   },
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984409.302988
+  },
+  {
+   "kind": "call",
+   "t": 13.49,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_node_jobs",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": [
+    {
+     "job": "job-76496",
+     "owner": "team-recsys",
+     "gpus": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "tag": "training",
+     "state": "running",
+     "checkpoint_age_min": 62,
+     "log_tail": [
+      "trainer[7321]: step 7589 loss=2.5760 lr=3.0e-04 tokens/s=82426",
+      "trainer[7321]: step 7639 loss=2.5747 lr=3.0e-04 tokens/s=86706",
+      "trainer[7321]: step 7689 loss=2.5734 lr=3.0e-04 tokens/s=80294"
+     ]
+    },
+    {
+     "job": "job-68759",
+     "owner": "team-speech",
+     "gpus": [
+      4,
+      5,
+      6,
+      7
+     ],
+     "tag": "training",
+     "state": "running",
+     "checkpoint_age_min": 13,
+     "log_tail": [
+      "trainer[4405]: step 16262 loss=1.6146 lr=3.0e-04 tokens/s=92423",
+      "trainer[4405]: step 16312 loss=1.6133 lr=3.0e-04 tokens/s=119353",
+      "trainer[4405]: step 16362 loss=1.6120 lr=3.0e-04 tokens/s=118220"
+     ]
+    }
+   ],
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984409.9492083
+  },
+  {
+   "kind": "call",
+   "t": 14.16,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_kmsg",
+   "params": {
+    "node": "node-11"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "6,0,0,-;Backport based on https://:@git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git 57699cd\n6,1,0,-;compat.git: https://:@git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git\n6,2,0,-;nvidia-nvlink: Nvlink Core is being initialized, major device number 238\n6,3,0,-;NVRM: loading NVIDIA UNIX Open Kernel Module for x86_64  570.148.08  Release Build  (dvs-builder@U22-I3-AE18-23-3)  Wed May... (1991 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984410.5701387
+  },
+  {
+   "kind": "diagnosis",
+   "t": 14.16,
+   "node": "node-11",
+   "category": "TRANSIENT",
+   "findings": [
+    {
+     "rule": "NVLINK_TRANSIENT",
+     "category": "TRANSIENT",
+     "finding": "#6",
+     "summary": "NVLink error recovered on its own: monitor, no write action",
+     "hit": {
+      "gpu": 5,
+      "evidence": [
+       "[Wed Oct 14 10:58:35 2026] NVRM: Xid (PCI:0000:90:00): 74, pid='<unknown>', name=<unknown>, NVLink: Link 3: link error detected; link recovery initiated (0x10000, 0x0, 0x0)",
+       "gpu 5 link 3: link_recovery_successful=1 failed=0, link up (#6). DCGM XID gauge stays 74 after recovery (#1)."
+      ]
+     }
+    }
+   ],
+   "proposed_steps": []
+  },
+  {
+   "kind": "call",
+   "t": 14.82,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_xid_events",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": [],
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984411.2374158
+  },
+  {
+   "kind": "call",
+   "t": 15.48,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_diag_result",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "{\n\t\"DCGM Diagnostic\" : \n\t{\n\t\t\"test_categories\" : \n\t\t[\n\t\t\t{\n\t\t\t\t\"category\" : \"Deployment\",\n\t\t\t\t\"tests\" : \n\t\t\t\t[\n\t\t\t\t\t{\n\t\t\t\t\t\t\"name\" : \"software\",\n\t\t\t\t\t\t\"results\" : \n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\"entity_group\" : \"GPU\",\n\t\t\t\t\t\t\t\t\"entity_group_id\" : 1,\n\t\t\t\t\t\t\t\t\"entity_id\" : 0,\n\t\t\t\t\t\t\t\t\"status\" : \"Pass\"\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\"entity_group\" : \"GPU\",\n\t\t\t\t\t\t\t\t\"entity_group_id\" : 1,\n\t\t\t\t\t\t\t\t\"entity_id\" : 1... (2322 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984411.8954318
+  },
+  {
+   "kind": "call",
+   "t": 16.17,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_dcgm_metrics",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "# HELP DCGM_FI_DEV_SM_CLOCK SM clock frequency (in MHz).\n# TYPE DCGM_FI_DEV_SM_CLOCK gauge\nDCGM_FI_DEV_SM_CLOCK{gpu=\"0\",UUID=\"GPU-d17f9aca-e01f-4057-8a02-135e92b1d3f2\",pci_bus_id=\"00000000:07:00.0\",device=\"nvidia0\",modelName=\"NVIDIA A100-SXM4-40GB\",Hostname=\"66d272fdf202\"} 1155\nDCGM_FI_DEV_SM_CLOCK{gpu=\"1\",UUID=\"GPU-7f26144b-9828-4fcd-99a5-4a7bb1fee08f\",pci_bus_id=\"00000000:0F:00.0\",device=\"nvidia... (54015 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984412.5555882
+  },
+  {
+   "kind": "call",
+   "t": 16.83,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_smi_query",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "\n==============NVSMI LOG==============\n\nTimestamp                                 : Wed Oct 14 10:58:38 2026\nDriver Version                            : 570.148.08\nCUDA Version                              : 12.8\n\nAttached GPUs                             : 8\nGPU 00000000:07:00.0\n    Product Name                          : NVIDIA A100-SXM4-40GB\n    Product Brand                         : NVIDIA\n  ... (85002 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984413.2424462
+  },
+  {
+   "kind": "call",
+   "t": 17.51,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_nvlink_errors",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": {
+    "text": "--- GPU 0\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 1\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 2\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 3\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 4\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 5\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 6\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n--- GPU 7\n  link 0: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 1: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 2: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 3: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 4: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 5: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 6: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 7: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 8: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 9: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 10: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n  link 11: CRC_FLIT=0 CRC_DATA=0 REPLAY=0 RECOVERY=0\n",
+    "links": []
+   },
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984413.909627
+  },
+  {
+   "kind": "call",
+   "t": 18.17,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_node_jobs",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": [
+    {
+     "job": "job-82118",
+     "owner": "team-speech",
+     "gpus": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "tag": "inference",
+     "state": "running",
+     "checkpoint_age_min": 183,
+     "log_tail": [
+      "server[5402]: served 6733 requests p99=99ms",
+      "server[5402]: served 2972 requests p99=61ms"
+     ]
+    },
+    {
+     "job": "job-40403",
+     "owner": "team-vision",
+     "gpus": [
+      4,
+      5,
+      6,
+      7
+     ],
+     "tag": "training",
+     "state": "running",
+     "checkpoint_age_min": 6,
+     "log_tail": [
+      "trainer[5972]: step 39608 loss=1.7282 lr=3.0e-04 tokens/s=98476",
+      "trainer[5972]: step 39658 loss=1.7269 lr=3.0e-04 tokens/s=80268",
+      "trainer[5972]: step 39708 loss=1.7256 lr=3.0e-04 tokens/s=89547"
+     ]
+    }
+   ],
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984414.5860598
+  },
+  {
+   "kind": "call",
+   "t": 18.8,
+   "actor": "diagnoser",
+   "mcp": "gfg-telemetry",
+   "tool": "get_kmsg",
+   "params": {
+    "node": "node-02"
+   },
+   "decision": "ALLOWED",
+   "source": "SERVER",
+   "reason": "",
+   "data": "6,0,0,-;Backport based on https://:@git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git 57699cd\n6,1,0,-;compat.git: https://:@git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git\n6,2,0,-;nvidia-nvlink: Nvlink Core is being initialized, major device number 238\n6,3,0,-;NVRM: loading NVIDIA UNIX Open Kernel Module for x86_64  570.148.08  Release Build  (dvs-builder@U22-I3-AE18-23-3)  Wed May... (1745 chars)",
+   "plan_hash": "4764e353c72db6bb595e70ed5e02922a244e3aaae9d357dadf6d956ace09ccc5",
+   "delegated": true,
+   "delegation_context": null,
+   "approval_id": null,
+   "ts": 1791984415.2446442
+  },
+  {
+   "kind": "diagnosis",
+   "t": 18.8,
+   "node": "node-02",
+   "category": "NOT_MEASURED",
+   "findings": [
+    {
+     "rule": "POWER_OVER_CAP",
+     "category": "NORMAL",
+     "finding": "#10",
+     "summary": "Power draw above the limit with SW power cap active is normal capping: no action",
+     "hit": {
+      "gpus": 5,
+      "evidence": [
+       "nvidia-smi 00000000:07:00.0: draw 437.47 W > limit 400.0 W, SW Power Cap Active on 5 GPU(s): the cap is doing its job (#10)"
+      ]
+     }
+    },
+    {
+     "rule": "THROTTLE_NOT_MEASURED",
+     "category": "NOT_MEASURED",
+     "finding": "#3",
+     "summary": "Throttling with zero violation counters: counters are not measured, stay in investigation",
+     "hit": {
+      "gpus": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7
+      ],
+      "evidence": [
+       "gpu 0: throttle mask 0x4 (SW power cap) but all violation counters 0: counters NOT_MEASURED here, not proof of health (#3)"
+      ]
+     }
+    }
+   ],
+   "proposed_steps": []
+  }
+ ],
+ "scene": "noise",
+ "fleet_audit": []
+}

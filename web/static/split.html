@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Gforensics Guard · Split screen</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8553d'/%3E%3Cpath d='M16 6l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V9z' fill='none' stroke='white' stroke-width='2.4'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l7 2.6v5.2c0 4.4-3 7.9-7 9.6-4-1.7-7-5.2-7-9.6V5.6z"/><path d="M8.6 12.2l2.3 2.3 4.5-4.6"/></svg></div>
+  <div class="crumbs"><b>Gforensics Guard</b><span class="sep">/</span><span id="crumb">Naive agent vs Gforensics Guard</span></div>
+  <span class="sandbox-pill" title="No real GPUs or customers: a simulated 16-server fleet. Every ArmorIQ verdict is real.">Simulated fleet · real ArmorIQ</span>
+  <nav><a href="/" class="">Incident console</a><a href="/split" class="on">Split screen</a></nav>
+</header>
+<div class="split-bar">
+  <div class="seg" id="scenes"></div>
+  <div class="seg" id="mode"><button data-mode="live">Governed: live now</button><button data-mode="replay">Governed: recorded run</button></div>
+  <label class="toggle" id="compWrap" title="The planner itself is compromised and writes the attacker's step INTO the plan ArmorIQ signs."><input type="checkbox" id="compromised" checked> Compromised planner</label>
+  <button class="btn accent" id="go">▶ Run both agents</button>
+  <span class="hint" id="err" style="color:var(--bad)"></span>
+</div>
+<div style="padding:10px 20px 0"><div class="card" style="padding:12px 16px"><div class="label">Same alert, same AI, same tools</div>
+  <div id="objective" style="font-weight:600;margin-top:4px">Pick a scene and press Run. Both agents get the same incident at the same moment.</div><div id="story" class="muted small"></div></div></div>
+<main class="split">
+  <section class="side">
+    <div class="card panel">
+      <div class="banner naive"><b>✕ Naive agent: NO ArmorIQ.</b> Does whatever its AI suggests, straight on the fleet.</div>
+      <div class="fleet" id="fleetN" style="padding:12px 0 0"></div>
+      <div class="tl" id="tlN"></div>
+      <div class="hint" id="outN"></div>
+    </div>
+  </section>
+  <section class="side">
+    <div class="card panel">
+      <div class="banner gov"><b>✓ Gforensics Guard + ArmorIQ.</b> Every call checked against a signed plan and policies.</div>
+      <div id="modeBanner" style="margin-top:8px"></div>
+      <div class="fleet" id="fleetG" style="padding:12px 0 0"></div>
+      <div class="tl" id="tlG"></div>
+      <div class="hint" id="outG"></div>
+    </div>
+  </section>
+</main>
+<div style="padding:0 20px 20px"><div class="card explain" id="explain" style="margin-top:0"><div class="label">What does this mean?</div><p>Click any step on either side.</p></div></div>
+<script src="/static/app.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let info, scene = "split_screen", mode = "replay", running = false;
+  GFG.fleetMap($("fleetN"), null, "Naive agent's fleet (its own sandbox copy)");
+  GFG.fleetMap($("fleetG"), null, "Governed fleet (served by our MCP servers)");
+  const select = (e, d) => { $("explain").innerHTML = `<div class="label">What does this mean?</div><h4>${d.title}</h4><p>${d.explain || ""}</p><details><summary>Raw record</summary><pre>${GFG.esc(JSON.stringify(d.raw || e, null, 1))}</pre></details>`; };
+
+  function render() {
+    $("scenes").innerHTML = info.scenes.map((s) => `<button data-s="${s.name}" class="${s.name === scene ? "on" : ""}">${GFG.esc((GFG.SCENE_TITLES[s.name] || [s.name])[0])}</button>`).join("");
+    $("scenes").querySelectorAll("button").forEach((b) => b.onclick = () => { scene = b.dataset.s; render(); });
+    const sc = info.scenes.find((s) => s.name === scene);
+    $("compWrap").style.display = sc.has_compromised ? "" : "none";
+    if (!sc.has_compromised) $("compromised").checked = false;
+    $("mode").querySelector('[data-mode="live"]').disabled = !info.live_available;
+    if (!info.live_available) mode = "replay";
+    $("mode").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.mode === mode));
+    $("objective").textContent = sc.objective;
+    $("story").textContent = (GFG.SCENE_TITLES[scene] || [, sc.story])[1];
+  }
+  $("mode").querySelectorAll("button").forEach((b) => b.onclick = () => { mode = b.dataset.mode; render(); });
+
+  $("go").onclick = async () => {
+    if (running) return;
+    $("err").textContent = "";
+    let id;
+    try { id = (await GFG.startRun({ scene, mode, compromised: $("compromised").checked, naive: true })).id; }
+    catch (x) { $("err").textContent = x.message; return; }
+    running = true; $("go").disabled = true; $("go").textContent = "Running…";
+    $("outN").textContent = $("outG").textContent = "";
+    const tN = GFG.Timeline($("tlN"), "naive", select), tG = GFG.Timeline($("tlG"), "governed", select), eN = [], eG = [];
+    GFG.stream(id, {
+      meta: (m) => { $("modeBanner").innerHTML = m.run.mode === "live" ? `<div class="banner live">● LIVE: ArmorIQ is answering right now.</div>` : `<div class="banner replay">⟲ REPLAY of a real run recorded ${GFG.esc(m.run.recorded.recorded_at)}; verdicts are ArmorIQ's from that run.</div>`; },
+      event: (m) => { (m.side === "naive" ? eN : eG).push(m.event); (m.side === "naive" ? tN : tG).add(m.event); },
+      fleet: (m) => {
+        if (m.naive) GFG.fleetMap($("fleetN"), m.naive, "Naive agent's fleet (its own sandbox copy)");
+        if (m.governed) GFG.fleetMap($("fleetG"), m.governed, "Governed fleet (served by our MCP servers)");
+      },
+      done: (m) => {
+        running = false; $("go").disabled = false; $("go").textContent = "▶ Run again";
+        $("outN").innerHTML = `<b>Outcome:</b> ${GFG.esc(m.naive_outcome)}. ${GFG.esc(GFG.plainOutcome(eN, true))}`;
+        $("outG").innerHTML = m.status === "error" ? `<b>Run failed:</b> ${GFG.esc(m.error)} (app error, not an ArmorIQ verdict)` : `<b>Outcome:</b> ${GFG.esc(GFG.plainOutcome(eG))} · <a href="/report/${id}">lineage report →</a>`;
+      },
+      error: () => { running = false; $("go").disabled = false; },
+    });
+  };
+
+  GFG.api("/api/scenes").then((d) => { info = d; if (info.live_available) mode = "live"; render(); });
+})();
+</script>
+</body>
+</html>

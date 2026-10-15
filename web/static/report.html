@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Lineage report</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8553d'/%3E%3Cpath d='M16 6l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V9z' fill='none' stroke='white' stroke-width='2.4'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l7 2.6v5.2c0 4.4-3 7.9-7 9.6-4-1.7-7-5.2-7-9.6V5.6z"/><path d="M8.6 12.2l2.3 2.3 4.5-4.6"/></svg></div>
+  <div class="crumbs"><b>Gforensics Guard</b><span class="sep">/</span><span id="crumb">Intent lineage report</span></div>
+  <span class="sandbox-pill" title="No real GPUs or customers: a simulated 16-server fleet. Every ArmorIQ verdict is real.">Simulated fleet · real ArmorIQ</span>
+  <nav><a href="/" class="">Incident console</a><a href="/split" class="">Split screen</a></nav>
+</header>
+<main class="report">
+  <div class="noprint" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="print()">Print / save as PDF</button></div>
+  <div class="label">Intent lineage report</div>
+  <h1 id="h" style="margin:4px 0 6px;font-size:24px">Loading…</h1>
+  <div id="meta" class="muted"></div>
+  <div id="summary" class="card" style="padding:14px 16px;margin-top:14px"></div>
+  <h3 style="margin-top:24px">How authority was earned, step by step</h3>
+  <p class="muted small">Read top to bottom: the goal, each plan ArmorIQ signed, who got a pass, and what ArmorIQ answered to every single call. Badges are ArmorIQ's recorded answers.</p>
+  <div class="lin" id="lin"></div>
+</main>
+<script src="/static/app.js"></script>
+<script>
+(async () => {
+  const $ = (id) => document.getElementById(id), esc = GFG.esc;
+  const id = location.pathname.split("/").pop();
+  let r;
+  try { r = await GFG.api(`/api/runs/${id}`); }
+  catch (x) { $("h").textContent = "Report not found"; $("meta").textContent = "Runs live in server memory; a server restart clears them. Start a new run from the console."; return; }
+  const ev = r.gov_events, calls = ev.filter((e) => e.kind === "call");
+  const obj = ev.find((e) => e.kind === "objective") || {};
+  $("h").textContent = obj.text || r.scene;
+  $("meta").innerHTML = `${r.mode === "live" ? "Live run" : `Replay of a real run recorded ${esc(r.recorded.recorded_at)}`} · scene <b>${esc((GFG.SCENE_TITLES[r.scene] || [r.scene])[0])}</b>${r.compromised ? " · <b>compromised planner</b>" : ""} · status ${esc(r.status)}`;
+  const count = (d, s) => calls.filter((c) => c.decision === d && (!s || c.source === s)).length;
+  $("summary").innerHTML = `<div class="label">Summary</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0">
+      <span class="badge ALLOWED">✓ ${count("ALLOWED")} allowed by ArmorIQ</span>
+      <span class="badge HELD">⏸ ${count("HELD")} waiting for a human</span>
+      <span class="badge BLOCKED">✕ ${count("BLOCKED", "SERVER")} blocked by ArmorIQ policy</span>
+      <span class="badge BLOCKED sdk">⛔ ${count("BLOCKED", "SDK-LOCAL")} stopped: not in the signed plan</span>
+      ${count("ERROR") ? `<span class="badge ERROR">! ${count("ERROR")} errors (no verdict)</span>` : ""}
+    </div>
+    <div><b>Outcome:</b> ${esc(GFG.plainOutcome(ev))}</div><div class="mono muted" style="margin-top:4px">${esc(r.outcome || "-")}</div>
+    <div class="muted small" style="margin-top:4px">Fleet after the run: ${r.gov_fleet ? `${r.gov_fleet.gpus_out_of_service} GPUs out of service, drained: ${esc(r.gov_fleet.drained.join(", ") || "none")}, ${r.gov_fleet.rma_tickets} RMA tickets` : "-"}</div>`;
+
+  const plans = ev.filter((e) => e.kind === "plan");
+  const items = [];
+  const table = (rows) => `<table class="calls"><tr><th>Who</th><th>Action</th><th>Target</th><th>ArmorIQ's answer</th></tr>${rows.map((c) =>
+    `<tr><td>${esc(({ diagnoser: "Diagnoser", remediator: "Remediator", "diagnoser(llm-suggested)": "AI assistant (read-only pass)" })[c.actor] || c.actor)}${c.rule === "INJECTED" ? " ☠ planted" : ""}</td>
+     <td>${GFG.toolHtml(c.tool)}</td><td class="mono">${esc(GFG.target(c.params))}</td>
+     <td>${GFG.badge(c)}${c.decision !== "ALLOWED" && c.reason ? `<div class="mono muted" style="margin-top:4px">${esc(c.reason.slice(0, 160))}</div>` : ""}</td></tr>`).join("")}</table>`;
+  let buf = [];
+  const flush = () => { if (buf.length) { items.push(`<div class="lin-item"><div class="card">${table(buf)}</div></div>`); buf = []; } };
+  for (const e of ev) {
+    if (e.kind === "call") { buf.push(e); continue; }
+    flush();
+    if (e.kind === "objective") items.push(`<div class="lin-item"><div class="card"><div class="label">Objective</div><b>${esc(e.text)}</b><div class="muted small">requested by ${esc(e.requester || "on-call SRE")} · nodes ${esc(e.nodes.join(", "))}</div></div></div>`);
+    else if (e.kind === "plan") {
+      const parent = e.parent_plan_hash && plans.find((p) => p.plan_hash === e.parent_plan_hash);
+      items.push(`<div class="lin-item plan"><div class="card"><div class="label">${e.phase === "investigate" ? "Signed plan #1 · investigate" : "Signed plan #2 · remediate (authority expansion)"}</div>
+        <div style="margin:4px 0">${GFG.term("plan hash")} <span class="hash">${esc(e.plan_hash)}</span></div>
+        ${e.parent_plan_hash ? `<div class="small">chained to parent <span class="hash">${esc(e.parent_plan_hash.slice(0, 16))}…</span> ${parent ? `<span class="link-ok">✓ matches plan #1</span>` : ""}</div>` : ""}
+        <div class="small muted" style="margin-top:6px">Tools in the plan: ${e.steps.map((s) => esc(GFG.toolName(s.tool))).join(" · ")}</div>
+        ${(e.why || []).some((w) => w.rule) ? `<div class="small" style="margin-top:6px">Why each step: ${e.why.map((w) => `${esc(GFG.toolName(w.tool))} ← ${w.rule === "INJECTED" ? "☠ planted by compromised planner" : `rule ${esc(w.rule)}`}`).join(" · ")}</div>` : ""}</div></div>`);
+    } else if (e.kind === "delegation") items.push(`<div class="lin-item deleg"><div class="card"><div class="label">Delegation</div>${e.ok ? `Pass handed to the <b>${esc(e.agent)}</b> · trust_id <span class="mono">${esc(e.trust_id || "-")}</span>` : `Failed: ${esc(e.error)}`}</div></div>`);
+    else if (e.kind === "diagnosis") items.push(`<div class="lin-item"><div class="card"><div class="label">Diagnosis · ${esc(e.node)}</div><b>${esc(GFG.CATEGORY[e.category] || e.category)}</b>${e.findings.map((f) => `<div class="small">rule ${esc(f.rule)}: ${esc(f.summary)}</div>`).join("")}<div class="small muted">rule table proposes: ${e.proposed_steps.length ? e.proposed_steps.map((s) => esc(GFG.toolName(s.tool))).join(", ") : "no changes"}</div></div></div>`);
+    else if (e.kind === "narrative") items.push(`<div class="lin-item"><div class="card"><div class="label">AI assistant (advice only)</div><div class="small">${esc((e.narrative || "").slice(0, 600))}</div></div></div>`);
+    else if (e.kind === "injection") items.push(`<div class="lin-item"><div class="card" style="border-color:#f4a7a0"><div class="label">☠ Compromised planner</div>planted <b>${esc(GFG.toolName(e.tool))}</b> ${esc(GFG.target(e.params))} into plan #2</div></div>`);
+    else if (e.kind === "approval") items.push(`<div class="lin-item"><div class="card"><div class="label">Human approval · ${esc(GFG.toolName(e.tool))}</div>${e.status === "approved" ? `<span class="badge APPROVED">✓ Approved by a second team member in the ArmorIQ console</span>` : `<span class="badge HELD">⏸ Request sent to the ArmorIQ console: ${esc(e.status)}</span>`}</div></div>`);
+  }
+  flush();
+  $("lin").innerHTML = items.join("");
+})();
+</script>
+</body>
+</html>
