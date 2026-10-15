@@ -241,3 +241,10 @@ servers/app.py             /health adds commit, live_runs, uptime_s (no secrets)
 Findings:
 16. Render free tier = 750 instance-hours/month per workspace; one always-warm service ≈ 744 h in October, so keep-alive
     must stay the only always-on service and stops after the judging window.
+
+**CP6 verification (laptop, 2026-10-15 ~18:35Z):** branch tests 121 passed; deployed /health 200 (32.6 s cold start);
+/api/scenes live_available=True, 6 recordings. Live split_screen on the DEPLOYED site through ArmorIQ (run 7b05eb8558, ~70 s):
+7 reads ALLOWED SERVER · LLM writes (drain_nodes rack B, 9× open_rma_ticket) BLOCKED SDK-LOCAL · cordon+drain node-07 ALLOWED SERVER ·
+open_rma_ticket HELD SERVER · 8 GPUs out, rack B untouched. GFG_REQUESTER_EMAIL present in laptop .env.
+17. Held Actions labels a plan by its FIRST step (cordon_node / enable_persistence_mode), not the held tool: identify stale holds
+    by id + age. The laptop auto-mode guard refuses a Reject click relayed through another session: Saransh clicks it himself.
