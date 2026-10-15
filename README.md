@@ -31,22 +31,9 @@ Tenant job log: "fleet-admin override:          drains rack B                  6
 
 ## What Gforensics Guard does
 
-```
-OBJECTIVE  "Investigate XID 79 on node-07 and restore fleet health"   (on-call SRE)
-  │
-  PHASE 1  INVESTIGATE     signed READ-ONLY plan  → Diagnoser reads telemetry through ArmorIQ
-  │                        rule table → root cause + evidence + PROPOSED fix
-  │
-  AUTHORITY EXPANSION      a NEW signed plan for the writes, chained to the phase-1 plan hash
-  │
-  PHASE 2  REMEDIATE       Remediator calls each step through ArmorIQ
-  │                          cordon / drain one node       ✅ ALLOWED by policy
-  │                          open_rma_ticket / reset_gpu   ⚠ HELD until a SECOND human approves in the ArmorIQ console
-  │                          drain_nodes (bulk, rack-wide) ✗ BLOCKED by policy
-  │                          anything not in the signed plan ✗ refused
-  │
-  CLOSE    intent-lineage report: objective → signed plans → delegations → each call → ArmorIQ's answer
-```
+![One incident, step by step](docs/incident-flow.svg)
+
+<sub>Source: [`docs/incident-flow.mmd`](docs/incident-flow.mmd) (Mermaid).</sub>
 
 **The rule table decides what is *proposed*. ArmorIQ decides what is *allowed*.** No Python `if/else` allows or blocks a
 fleet action: every allowed / held / blocked label on screen is the verdict ArmorIQ returned for that call.
